@@ -12,7 +12,7 @@ body {
 }
 
 @theme {
-  --color-base: #0e0e14;
+  /* --color-base: #0e0e14; */
   --color-light: #f1f5f9;
   --color-primary: #1e1b2e;
   --color-surface: #151520;
