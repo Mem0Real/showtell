@@ -33,8 +33,8 @@ const contactInfo = [
       </svg>
     ),
     label: 'Email',
-    value: 'hello@showtel.com',
-    href: 'mailto:hello@showtel.com',
+    value: 'hello@showtell.com',
+    href: 'mailto:hello@showtell.com',
   },
   {
     icon: (

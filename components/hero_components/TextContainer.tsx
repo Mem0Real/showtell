@@ -62,7 +62,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
           animate={phase}
           className={`${inter.className} text-5xl md:text-9xl font-bold text-stone-800`}
         >
-          SHO
+          SHOW
         </motion.h1>
 
         <motion.h1
@@ -72,7 +72,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
           animate={phase}
           className={`${inter.className} text-5xl md:text-9xl font-bold text-stone-800`}
         >
-          TEL
+          TELL
         </motion.h1>
       </motion.div>
 
@@ -93,7 +93,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className='text-white text-2xl md:text-4xl font-extralight pb-4 capitalize'
               >
-                Welcome to shotel
+                Welcome to showtell
               </motion.h2>
               <motion.p
                 initial={{ y: 30, opacity: 0 }}

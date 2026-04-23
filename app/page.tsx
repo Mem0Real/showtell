@@ -9,6 +9,7 @@ import { ClipMask } from '@/components/ClipMask';
 import { BentoGrid } from '@/components/bento_components/BentoGrid';
 import { AnotherClipMask } from '@/components/AnotherClipMask';
 import { Contact } from '@/components/contact_components/Contact';
+import { Footer } from '@/components/footer_components/Footer';
 
 export default function Home() {
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function Home() {
       <BentoGrid />
       <AnotherClipMask />
       <Contact />
-      <div className='h-screen w-full bg-linear-to-b from-gray-50 to-light'></div>
+      <Footer />
     </main>
   );
 }
