@@ -25,6 +25,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   // Video options (you can customize these per hotel)
   const videoOptions = [
+    { label: 'Exterior', src: hotel.videoSrc },
     { label: 'Living Room', src: '/videos/v1.mkv' },
     { label: 'Bedroom', src: '/videos/v2.mkv' },
     // { label: 'Bathroom', src: '/videos/v2.mkv' },
@@ -239,7 +240,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                   e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
-                className='bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/70 transition'
+                className='bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/70 transition cursor-pointer'
               >
                 <span>{videoOptions.find((opt) => opt.src === currentVideo)?.label || 'Exterior'}</span>
                 <motion.svg
@@ -274,7 +275,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                         className={`w-full text-left px-4 py-2.5 text-sm transition ${
                           currentVideo === option.src
                             ? 'text-white bg-white/20'
-                            : 'text-white/70 hover:text-white hover:bg-white/10'
+                            : 'text-white/70 hover:text-white hover:bg-white/10 cursor-pointer'
                         }`}
                       >
                         {option.label}
@@ -331,7 +332,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       </AnimatePresence> */}
 
       {/* Progress indicator */}
-      <motion.div
+      {/* <motion.div
         className='absolute bottom-0 left-0 right-0 h-0.5 bg-white/10'
         animate={{ opacity: isHovered ? 1 : 0 }}
       >
@@ -344,7 +345,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                 : '0%',
           }}
         />
-      </motion.div>
+      </motion.div> */}
     </motion.div>
   );
 };

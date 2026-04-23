@@ -44,6 +44,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
     },
   };
 
+  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const filter = useTransform(scrollYProgress, [0, 0.5], ['blur(0px)', 'blur(20px)']);
 
   return (
@@ -82,10 +83,10 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
-            style={{ filter }}
-            className='absolute bottom-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col justify-center items-center w-full md:w-fit'
+            style={{ filter, opacity }}
+            className='absolute bottom-0 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col justify-center items-center w-full md:w-fit backdrop-blur-md'
           >
-            <div className='h-full w-full xl:px-36 lg:px-12 md:px-4 py-4 bg-gray-400/10 rounded-sm bg-clip-padding backdrop-blur-sm border border-b-0 border-gray-100/50 flex flex-col items-center justify-center gap-2'>
+            <div className='h-full w-full xl:px-36 lg:px-12 md:px-4 py-4 bg-gray-400/10 rounded-sm bg-clip-padding border border-b-0 border-gray-100/50 flex flex-col items-center justify-center gap-2'>
               <motion.h2
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
