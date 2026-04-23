@@ -5,6 +5,7 @@ import { initLenis } from '@/lib/lenis';
 
 import { Hero } from '@/components/hero_components/Hero';
 import { HotelGrid } from '@/components/grid_components/HotelGrid';
+import { ClipMask } from '@/components/ClipMask';
 import { BentoGrid } from '@/components/bento_components/BentoGrid';
 
 export default function Home() {
@@ -16,8 +17,9 @@ export default function Home() {
     <main className='w-full h-full bg-light'>
       <Hero />
       <HotelGrid />
+      <ClipMask />
       <BentoGrid />
-      <div className='h-screen w-full bg-accentSoft'></div>
+      <div className='h-screen w-full bg-linear-to-b from-gray-50 to-light'></div>
     </main>
   );
 }
