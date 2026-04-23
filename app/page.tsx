@@ -9,7 +9,7 @@ import { ClipMask } from '@/components/ClipMask';
 import { BentoGrid } from '@/components/bento_components/BentoGrid';
 import { AnotherClipMask } from '@/components/AnotherClipMask';
 import { Contact } from '@/components/contact_components/Contact';
-import { Footer } from '@/components/footer_components/Footer';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   useEffect(() => {
