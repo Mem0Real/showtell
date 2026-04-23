@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Link from 'next/link';
+
+import { motion, useScroll, useMotionValueEvent } from 'motion/react';
 
 const navlinks = [
   {
@@ -17,9 +19,24 @@ const navlinks = [
 ];
 
 export const Navbar = ({ showOverlayContent }: { showOverlayContent: Boolean }) => {
-  // Navbar animation variants
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, 'change', (current) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (current > previous && current > 100) setHidden(true);
+    else setHidden(false);
+  });
+
   const navbarVariants = {
-    hidden: { y: -100, opacity: 0 },
+    hidden: {
+      y: -40,
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+        ease: 'easeOut',
+      },
+    },
     visible: {
       y: 0,
       opacity: 1,
@@ -35,11 +52,11 @@ export const Navbar = ({ showOverlayContent }: { showOverlayContent: Boolean }) 
     <motion.nav
       variants={navbarVariants as any}
       initial='hidden'
-      animate={showOverlayContent ? 'visible' : 'hidden'}
-      className='fixed top-0 left-0 right-0 z-30 px-8 py-6'
+      animate={showOverlayContent ? (hidden ? 'hidden' : 'visible') : 'hidden'}
+      className='fixed top-4 left-0 right-0 z-40 w-[96%] lg:w-[97%] xl:w-[98.3%] mx-auto'
     >
-      <div className='mx-auto flex justify-between items-center bg-accentSoft/90 text-stone-800 ps-8 h-full border border-stone-800'>
-        <div className='text-xl py-2 pr-4 font-bold h-full border-r border-stone-800'>SHOWTEL</div>
+      <div className='mx-auto flex justify-between items-center bg-light text-stone-800 ps-8 h-full border border-stone-800'>
+        <div className='text-xl py-2 pr-4 font-bold h-full border-r border-stone-800 uppercase'>shotel</div>
         <div className='flex h-full'>
           {navlinks.map((link, i) => (
             <Link
