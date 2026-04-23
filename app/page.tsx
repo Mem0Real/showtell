@@ -11,9 +11,10 @@ export default function Home() {
   }, []);
 
   return (
-    <main className='bg-neutral-200'>
+    <main className='w-full h-full bg-light '>
       <Hero />
       <HotelGrid />
+      <div className='h-screen w-full bg-accentSoft'></div>
     </main>
   );
 }

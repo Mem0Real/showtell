@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Inter } from 'next/font/google';
+import { TextContainer } from '@/components/hero_components/TextContainer';
+import { Navbar } from '@/components/Navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -60,8 +62,6 @@ export default function HeroPage() {
   useEffect(() => {
     if (!videoLoaded) return;
 
-    console.log('Video load completed');
-
     const timers: NodeJS.Timeout[] = [];
 
     // Phase 2: Split text and show small video
@@ -71,7 +71,7 @@ export default function HeroPage() {
     timers.push(setTimeout(() => setPhase('zoom'), 2000));
 
     // Phase 4: Show overlay content
-    timers.push(setTimeout(() => setShowOverlayContent(true), 3000));
+    timers.push(setTimeout(() => setShowOverlayContent(true), 2500));
 
     // Phase 5: Complete - start autoplay
     timers.push(
@@ -80,49 +80,11 @@ export default function HeroPage() {
         if (videoRef.current) {
           videoRef.current.play();
         }
-      }, 3500),
+      }, 2500),
     );
 
     return () => timers.forEach(clearTimeout);
   }, [videoLoaded]);
-
-  // Pulse animation variants
-  const pulseVariants = {
-    loading: {
-      opacity: [0.6, 1, 0.6],
-      scale: [0.98, 1, 0.98],
-      transition: {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      },
-    },
-  };
-
-  // Text animation variants
-  const textVariants = {
-    initial: { opacity: 0 },
-    loading: { opacity: 1 },
-    split: (isLeft: Boolean) => ({
-      x: isLeft ? '-20vw' : '20vw',
-      opacity: 1,
-      transition: { duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] },
-    }),
-    zoom: (isLeft: Boolean) => ({
-      x: isLeft ? '-15vw' : '15vw',
-      opacity: 1,
-      transition: { duration: 1.4, ease: 'easeOut' },
-    }),
-    complete: {
-      x: 0,
-      opacity: 0,
-      transition: {
-        duration: 0.8,
-        delay: 0.3,
-        ease: 'easeOut',
-      },
-    },
-  };
 
   // Video animation variants
   const videoVariants = {
@@ -141,7 +103,7 @@ export default function HeroPage() {
       opacity: 1,
       scale: 1,
       filter: 'blur(0px)',
-      transition: { duration: 1.6, ease: [0.43, 0.13, 0.23, 0.96] },
+      transition: { duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] },
     },
     complete: {
       opacity: 1,
@@ -150,136 +112,204 @@ export default function HeroPage() {
     },
   };
 
-  // Navbar animation variants
-  const navbarVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-        delay: 0.2,
-      },
-    },
-  };
 
   return (
-    <div className='relative w-full h-screen overflow-hidden bg-linear-to-b from-black to-neutral-200'>
-      {/* Navbar */}
-      <motion.nav
-        variants={navbarVariants as any}
-        initial='hidden'
-        animate={showOverlayContent ? 'visible' : 'hidden'}
-        className='absolute top-0 left-0 right-0 z-30 px-8 py-6'
-      >
-        <div className='max-w-7xl mx-auto flex justify-between items-center text-white'>
-          <div className='text-2xl font-bold'>SHOWTEL</div>
-          <div className='flex gap-8'>
-            <a href='#' className='hover:text-gray-300 transition'>
-              Home
-            </a>
-            <a href='#' className='hover:text-gray-300 transition'>
-              About
-            </a>
-            <a href='#' className='hover:text-gray-300 transition'>
-              Contact
-            </a>
-          </div>
-        </div>
-      </motion.nav>
+    // <div className='relative w-full h-screen overflow-hidden bg-linear-to-b from-black to-neutral-200'>
+    //   {/* Navbar */}
+    //   <motion.nav
+    //     variants={navbarVariants as any}
+    //     initial='hidden'
+    //     animate={showOverlayContent ? 'visible' : 'hidden'}
+    //     className='absolute top-0 left-0 right-0 z-30 px-8 py-6'
+    //   >
+    //     <div className='max-w-7xl mx-auto flex justify-between items-center text-white'>
+    //       <div className='text-2xl font-bold'>SHOWTEL</div>
+    //       <div className='flex gap-8'>
+    //         <a href='#' className='hover:text-gray-300 transition'>
+    //           Home
+    //         </a>
+    //         <a href='#' className='hover:text-gray-300 transition'>
+    //           About
+    //         </a>
+    //         <a href='#' className='hover:text-gray-300 transition'>
+    //           Contact
+    //         </a>
+    //       </div>
+    //     </div>
+    //   </motion.nav>
 
-      {/* Text Container */}
-      <motion.div
-        className='relative z-10 w-full h-screen flex justify-center items-center gap-6'
-        animate={phase === 'loading' ? 'loading' : undefined}
-        variants={pulseVariants as any}
-      >
-        <motion.h1
-          custom={true}
-          variants={textVariants as any}
+    //   {/* Text Container */}
+    //   <motion.div
+    //     className='relative z-10 w-full h-screen flex justify-center items-center gap-6'
+    //     animate={phase === 'loading' ? 'loading' : undefined}
+    //     variants={pulseVariants as any}
+    //   >
+    //     <motion.h1
+    //       custom={true}
+    //       variants={textVariants as any}
+    //       initial='initial'
+    //       animate={phase}
+    //       className={`${inter.className} text-5xl md:text-7xl font-bold text-white`}
+    //     >
+    //       SHOWTEL
+    //     </motion.h1>
+
+    //     <motion.h1
+    //       custom={false}
+    //       variants={textVariants as any}
+    //       initial='initial'
+    //       animate={phase}
+    //       className={`${inter.className} text-5xl md:text-7xl font-bold text-white`}
+    //     >
+    //       EXPERIENCE
+    //     </motion.h1>
+    //   </motion.div>
+
+    //   {/* Overlay Content (appears after zoom) */}
+    //   <AnimatePresence>
+    //     {showOverlayContent && (
+    //       <motion.div
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         transition={{ duration: 0.8 }}
+    //         className='absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none'
+    //       >
+    //         <motion.h2
+    //           initial={{ y: 30, opacity: 0 }}
+    //           animate={{ y: 0, opacity: 1 }}
+    //           transition={{ duration: 0.6, delay: 0.3 }}
+    //           className='text-white text-2xl md:text-4xl font-light mb-4'
+    //         >
+    //           Welcome to the Future
+    //         </motion.h2>
+    //         <motion.p
+    //           initial={{ y: 30, opacity: 0 }}
+    //           animate={{ y: 0, opacity: 1 }}
+    //           transition={{ duration: 0.6, delay: 0.5 }}
+    //           className='text-white/80 text-lg md:text-xl'
+    //         >
+    //           Discover amazing experiences
+    //         </motion.p>
+    //         <motion.button
+    //           initial={{ y: 30, opacity: 0 }}
+    //           animate={{ y: 0, opacity: 1 }}
+    //           transition={{ duration: 0.6, delay: 0.7 }}
+    //           className='mt-8 px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition pointer-events-auto cursor-pointer'
+    //         >
+    //           Get Started
+    //         </motion.button>
+    //       </motion.div>
+    //     )}
+    //   </AnimatePresence>
+
+    //   {/* Video */}
+    //   <motion.video
+    //     ref={videoRef}
+    //     muted
+    //     loop
+    //     playsInline
+    //     preload='auto'
+    //     variants={videoVariants as any}
+    //     initial='initial'
+    //     animate={phase}
+    //     className='absolute inset-0 w-full h-full object-cover z-20'
+    //     src='/videos/hero.webm'
+    //   />
+
+    //   {/* Loading indicator */}
+    //   <AnimatePresence>
+    //     {phase === 'loading' && (
+    //       <motion.div
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         exit={{ opacity: 0 }}
+    //         className='absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-black/60 text-sm'
+    //       >
+    //         Loading...
+    //       </motion.div>
+    //     )}
+    //   </AnimatePresence>
+    // </div>
+
+    <section className='w-full h-full sm:h-full md:h-[99vh] px-4 py-8'>
+      <div className='border border-black text-neutral-800 h-full'>
+        {/* Navbar */}
+        <Navbar showOverlayContent={showOverlayContent} />
+
+        {/* Main Content */}
+        <TextContainer phase={phase} />
+
+        {/* Process being 
+          1) Text split while image zooms in to 50%
+          2) At 50% pause for a sec then text start unsplit while image zoom to box
+          3) Navbar pushes down from top and overlay text pops up 
+        */}
+
+        {/* Overlay Content (appears after zoom) */}
+        <AnimatePresence>
+          {showOverlayContent && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className='absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none'
+            >
+              <motion.h2
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className='text-white text-2xl md:text-4xl font-light mb-4'
+              >
+                Welcome to the Future
+              </motion.h2>
+              <motion.p
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className='text-white/80 text-lg md:text-xl'
+              >
+                Discover amazing experiences
+              </motion.p>
+              <motion.button
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className='mt-8 px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition pointer-events-auto cursor-pointer'
+              >
+                Get Started
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Video */}
+        <motion.video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload='auto'
+          variants={videoVariants as any}
           initial='initial'
           animate={phase}
-          className={`${inter.className} text-5xl md:text-7xl font-bold text-white`}
-        >
-          SHOWTEL
-        </motion.h1>
+          className='absolute inset-0 w-full h-full object-cover z-20'
+          src='/videos/hero.webm'
+        />
 
-        <motion.h1
-          custom={false}
-          variants={textVariants as any}
-          initial='initial'
-          animate={phase}
-          className={`${inter.className} text-5xl md:text-7xl font-bold text-white`}
-        >
-          EXPERIENCE
-        </motion.h1>
-      </motion.div>
-
-      {/* Overlay Content (appears after zoom) */}
-      <AnimatePresence>
-        {showOverlayContent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className='absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none'
-          >
-            <motion.h2
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className='text-white text-2xl md:text-4xl font-light mb-4'
+        {/* Loading indicator */}
+        <AnimatePresence>
+          {phase === 'loading' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className='absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-black/60 text-sm'
             >
-              Welcome to the Future
-            </motion.h2>
-            <motion.p
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className='text-white/80 text-lg md:text-xl'
-            >
-              Discover amazing experiences
-            </motion.p>
-            <motion.button
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className='mt-8 px-8 py-3 bg-white text-black rounded-full font-semibold hover:bg-gray-200 transition pointer-events-auto cursor-pointer'
-            >
-              Get Started
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Video */}
-      <motion.video
-        ref={videoRef}
-        muted
-        loop
-        playsInline
-        preload='auto'
-        variants={videoVariants as any}
-        initial='initial'
-        animate={phase}
-        className='absolute inset-0 w-full h-full object-cover z-20'
-        src='/videos/hero.webm'
-      />
-
-      {/* Loading indicator */}
-      <AnimatePresence>
-        {phase === 'loading' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className='absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-black/60 text-sm'
-          >
-            Loading...
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+              Loading...
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
   );
 }
