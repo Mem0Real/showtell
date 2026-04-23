@@ -24,14 +24,14 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
     initial: { opacity: 0 },
     loading: { opacity: 1 },
     split: (isLeft: Boolean) => ({
-      x: isLeft ? '-25vw' : '23vw',
+      x: isLeft ? '-17vw' : '15vw',
       opacity: 1,
       transition: { duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] },
     }),
     zoom: (isLeft: Boolean) => ({
-      x: isLeft ? '-20vw' : '20vw',
+      x: 0,
       opacity: 1,
-      transition: { duration: 1.4, ease: 'easeOut' },
+      transition: { duration: 1.0, ease: 'easeIn' },
     }),
     complete: {
       x: 0,
