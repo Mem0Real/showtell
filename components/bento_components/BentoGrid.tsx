@@ -150,7 +150,7 @@ export const BentoGrid = () => {
           </motion.div>
 
           {/* Bento Grid */}
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]'>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] grid-flow-dense'>
             {bentoItems.map((item, index) => (
               <BentoCard key={item.id} item={item} onOpenModel={setSelectedModel} />
             ))}
