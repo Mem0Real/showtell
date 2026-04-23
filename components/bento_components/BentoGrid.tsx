@@ -133,7 +133,7 @@ export const BentoGrid = () => {
   const [selectedModel, setSelectedModel] = useState<BentoItem | null>(null);
 
   return (
-    <>
+    <div className='w-full h-full'>
       <section className='w-full min-h-screen bg-gray-50 py-20 px-4 md:px-8'>
         <div className='max-w-[85vw] mx-auto'>
           {/* Header */}
@@ -165,6 +165,6 @@ export const BentoGrid = () => {
         modelPath={selectedModel?.modelPath}
         title={selectedModel?.title}
       />
-    </>
+    </div>
   );
 };

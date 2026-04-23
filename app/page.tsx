@@ -11,6 +11,11 @@ import { AnotherClipMask } from '@/components/AnotherClipMask';
 import { Contact } from '@/components/contact_components/Contact';
 import { Footer } from '@/components/Footer';
 
+/* TODO 
+  - contact interactive elements not working
+  - 3D modal needs fixing
+  - compress images
+*/
 export default function Home() {
   useEffect(() => {
     initLenis();
