@@ -96,7 +96,7 @@ export const BentoCard: React.FC<BentoCardProps> = ({ item, onOpenModel }) => {
         <LayoutGroup>
           <motion.div
             layout='position'
-            className='relative flex flex-col justify-center md:justify-around items-start h-full'
+            className='relative flex flex-col justify-center items-start h-full xl:h-auto'
           >
             <motion.div
               className='flex items-end justify-between'

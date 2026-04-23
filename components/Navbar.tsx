@@ -15,8 +15,10 @@ export const Navbar = ({ showOverlayContent }: { showOverlayContent: boolean }) 
 
   useMotionValueEvent(scrollY, 'change', (current) => {
     const previous = scrollY.getPrevious() ?? 0;
-    if (current > previous && current > 100) setHidden(true);
-    else setHidden(false);
+    if (current > previous && current > 100) {
+      setHidden(true);
+      setMobileMenuOpen(false);
+    } else setHidden(false);
   });
 
   const navbarVariants = {
@@ -95,7 +97,7 @@ export const Navbar = ({ showOverlayContent }: { showOverlayContent: boolean }) 
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -10, transition: { duration: 0.3 } }}
             className='bg-light border border-stone-800 border-t-0 mx-2 rounded-b-2xl overflow-hidden md:hidden'
           >
             <div className='flex flex-col'>
