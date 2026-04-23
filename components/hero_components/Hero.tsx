@@ -12,7 +12,7 @@ type Phase =
   | 'zoom' // Video zooms to full screen
   | 'complete'; // Navbar and text fade in, autoplay starts
 
-export default function HeroPage() {
+export const Hero = () => {
   const [phase, setPhase] = useState<Phase>('loading');
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [showOverlayContent, setShowOverlayContent] = useState(false);

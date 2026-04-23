@@ -2,8 +2,10 @@
 
 import { useEffect } from 'react';
 import { initLenis } from '@/lib/lenis';
-import Hero from '@/components/Hero';
-import HotelGrid from '@/components/HotelGrid';
+
+import { Hero } from '@/components/hero_components/Hero';
+import { HotelGrid } from '@/components/grid_components/HotelGrid';
+import { BentoGrid } from '@/components/bento_components/BentoGrid';
 
 export default function Home() {
   useEffect(() => {
@@ -14,6 +16,7 @@ export default function Home() {
     <main className='w-full h-full bg-light'>
       <Hero />
       <HotelGrid />
+      <BentoGrid />
       <div className='h-screen w-full bg-accentSoft'></div>
     </main>
   );

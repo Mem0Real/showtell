@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { HotelCard } from '@/components/grid_components/HotelCard';
 
 // Grid Component
-export default function HotelGrid() {
+export const HotelGrid = () => {
   const hotels = [
     { name: 'Grand Horizon', videoSrc: '/videos/v3.mkv' },
     { name: 'Ocean Vista', videoSrc: '/videos/v3.mkv' },
