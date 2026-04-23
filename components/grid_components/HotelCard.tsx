@@ -38,7 +38,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     const handleLoadedData = () => {
       if (video.duration && Number.isFinite(video.duration)) {
-        console.log('video_loaded');
         setVideoReady(true);
         setIsLoading(false);
       }

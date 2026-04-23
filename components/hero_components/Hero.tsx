@@ -20,17 +20,11 @@ export const Hero = () => {
 
   // Handle video loading
   useEffect(() => {
-    console.log('video component');
-
     const video = videoRef.current;
-    if (!video) {
-      console.log('no video');
-      return;
-    }
+    if (!video) return;
 
     const handleLoadedData = () => {
       setVideoLoaded(true);
-      console.log('video loaded');
     };
 
     const handleError = (e: any) => {
@@ -39,10 +33,8 @@ export const Hero = () => {
 
     const checkIfLoaded = () => {
       // readyState 4 means HAVE_ENOUGH_DATA
-      if (video.readyState >= 4) {
-        console.log('Video is already loaded (cached)');
-        handleLoadedData();
-      } else {
+      if (video.readyState >= 4) handleLoadedData();
+      else {
         video.addEventListener('loadeddata', handleLoadedData);
         video.addEventListener('error', handleError);
       }
@@ -84,7 +76,6 @@ export const Hero = () => {
     return () => timers.forEach(clearTimeout);
   }, [videoLoaded]);
 
-
   return (
     <section className='w-full h-[99vh] px-2 md:px-4 py-2 md:py-4 pb-2'>
       <div className='relative border border-black text-neutral-800 h-full'>
@@ -101,8 +92,8 @@ export const Hero = () => {
         */}
 
         {/* Video */}
-          <VideoContainer videoRef={videoRef} phase={phase} />
-          </div>
+        <VideoContainer videoRef={videoRef} phase={phase} />
+      </div>
     </section>
   );
-}
+};
