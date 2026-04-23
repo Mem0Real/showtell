@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useTransform, useScroll } from 'motion/react';
 
 import { inter } from '@/lib/fonts';
-import ScrollDownIcon from '@/components/hero_components/ScrollDownIcon';
+import { MouseScrollIcon } from '@/components/hero_components/MouseScrollIcon';
 
 export const TextContainer = ({ phase, showOverlayContent }: any) => {
   const { scrollYProgress } = useScroll();
@@ -107,7 +107,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <ScrollDownIcon />
+                <MouseScrollIcon />
               </motion.button>
             </div>
           </motion.div>

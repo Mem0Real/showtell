@@ -1,51 +1,44 @@
 'use client';
-import { useRef } from 'react';
 
-const hotels = [
-  {
-    id: 1,
-    name: 'Aurora Suites',
-    gif: '/cards/hotel1.gif',
-    video: '/videos/v1.mkv',
-  },
-  {
-    id: 2,
-    name: 'Velaris Resort',
-    gif: '/cards/hotel2.gif',
-    video: '/videos/v2.mkv',
-  },
-];
+import { motion } from 'framer-motion';
+import { HotelCard } from '@/components/grid_components/HotelCard';
 
-function HotelCard({ hotel }: any) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  return (
-    <div
-      key={hotel.id}
-      className='group relative rounded-xl overflow-hidden cursor-pointer'
-      onMouseEnter={() => videoRef.current?.play()}
-      onMouseLeave={() => {
-        videoRef.current?.pause();
-        videoRef.current!.currentTime = 0;
-      }}
-    >
-      <video ref={videoRef} src={hotel.video} muted loop playsInline className='w-full h-full object-cover' />
-
-      <div className='absolute inset-0 bg-linear-to-t from-black/70 to-transparent' />
-
-      <div className='absolute bottom-4 left-4'>
-        <h3 className='text-lg text-white'>{hotel.name}</h3>
-      </div>
-    </div>
-  );
-}
-
+// Grid Component
 export default function HotelGrid() {
-  return (
-    <section className='px-6 py-24 max-w-6xl mx-auto'>
-      <h2 className='text-3xl font-display mb-12 text-accent'>Featured Hotels</h2>
+  const hotels = [
+    { name: 'Grand Horizon', videoSrc: '/videos/v3.mkv' },
+    { name: 'Ocean Vista', videoSrc: '/videos/v3.mkv' },
+    { name: 'Mountain Retreat', videoSrc: '/videos/v3.mkv' },
+    { name: 'Urban Luxury', videoSrc: '/videos/v3.mkv' },
+  ];
 
-      <div className='grid md:grid-cols-2 gap-8'>{hotels.map((hotel) => HotelCard({ hotel }))}</div>
+  return (
+    <section className='w-full min-h-screen bg-light py-20 px-4 md:px-8'>
+      <div className='max-w-7xl mx-auto'>
+        <motion.div
+          className='mb-16'
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-5xl md:text-6xl font-bold text-neutral-800 mb-4'>Properties Showcase</h2>
+          <p className='text-neutral-800/60 text-lg'>Drag on the images to explore every detail</p>
+        </motion.div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {hotels.map((hotel, index) => (
+            <motion.div
+              key={hotel.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+            >
+              <HotelCard hotel={hotel} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

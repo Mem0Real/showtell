@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const MouseScrollIcon = () => {
+export const MouseScrollIcon = () => {
   return (
     <div
       className='mouse'
@@ -38,5 +38,3 @@ const MouseScrollIcon = () => {
     </div>
   );
 };
-
-export default MouseScrollIcon;
