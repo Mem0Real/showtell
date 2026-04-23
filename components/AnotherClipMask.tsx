@@ -6,7 +6,7 @@ export const AnotherClipMask = () => {
   const motto = 'Your Safe Haven Awaits';
 
   return (
-    <section className='relative w-full py-24 md:py-32 bg-linear-to-b from-gray-50 to-light overflow-hidden'>
+    <section className='relative w-full py-24 md:py-32 bg-linear-to-b from-gray-50 via-light to-gray-50 overflow-hidden'>
       <div className='max-w-full lg:max-w-4xl mx-auto px-2 lg:px-4'>
         {/* Hand-drawn border box */}
         <div className='relative'>

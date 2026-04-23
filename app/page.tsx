@@ -8,6 +8,7 @@ import { HotelGrid } from '@/components/grid_components/HotelGrid';
 import { ClipMask } from '@/components/ClipMask';
 import { BentoGrid } from '@/components/bento_components/BentoGrid';
 import { AnotherClipMask } from '@/components/AnotherClipMask';
+import { Contact } from '@/components/contact_components/Contact';
 
 export default function Home() {
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function Home() {
       <ClipMask />
       <BentoGrid />
       <AnotherClipMask />
+      <Contact />
       <div className='h-screen w-full bg-linear-to-b from-gray-50 to-light'></div>
     </main>
   );
