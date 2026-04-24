@@ -39,22 +39,37 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
-  // Video ready
+  // Video loading
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !videoReady) return;
+    if (!video) return;
 
-    video.pause();
-    video.currentTime = 0;
+    let isMounted = true;
 
-    // trick: briefly play then pause to unlock frame updates
-    video
-      .play()
-      .then(() => {
-        video.pause();
-      })
-      .catch(() => {});
-  }, [videoReady]);
+    const handleReady = () => {
+      if (!isMounted) return;
+
+      if (video.duration && Number.isFinite(video.duration)) {
+        setVideoReady(true);
+        setIsLoading(false);
+      }
+    };
+
+    // Case 1: already ready
+    if (video.readyState >= 2) {
+      handleReady();
+    }
+
+    // Case 2: wait for readiness
+    video.addEventListener('loadeddata', handleReady);
+    video.addEventListener('canplay', handleReady);
+
+    return () => {
+      isMounted = false;
+      video.removeEventListener('loadeddata', handleReady);
+      video.removeEventListener('canplay', handleReady);
+    };
+  }, [currentVideo]);
 
   // RAF smoothing loop
   useEffect(() => {
@@ -130,7 +145,13 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   // Mouse Up
   useEffect(() => {
-    const up = () => setIsDragging(false);
+    const up = () => {
+      setIsDragging(false);
+
+      const video = videoRef.current;
+      if (!video) return;
+      video.pause();
+    };
 
     if (isDragging) {
       window.addEventListener('mouseup', up);
@@ -222,7 +243,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         preload='auto'
         playsInline
         className='absolute inset-0 w-full h-full object-cover pointer-events-none'
-        disablePictureInPicture
       />
 
       <AnimatePresence>
