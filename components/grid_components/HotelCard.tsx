@@ -214,6 +214,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         preload='auto'
         playsInline
         className='absolute inset-0 w-full h-full object-cover pointer-events-none'
+        disablePictureInPicture
       />
 
       <AnimatePresence>
