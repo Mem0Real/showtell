@@ -46,7 +46,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
       e.preventDefault();
       setIsDragging(true);
-      setIsHovered(!isHovered); // Show dropdown button
+      setIsHovered(true); // Show dropdown button
       lastX.current = e.touches[0].clientX;
     };
 
