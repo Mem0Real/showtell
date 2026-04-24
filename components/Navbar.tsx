@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react';
+import { playfair } from '@/lib/fonts';
 
 const navlinks = [
   { title: 'Home', url: '#' },
@@ -42,7 +43,7 @@ export const Navbar = ({ showOverlayContent }: { showOverlayContent: boolean }) 
       className='fixed top-4 left-0 right-0 z-40 w-[96%] lg:w-[97%] xl:w-[98.3%] mx-auto'
     >
       <div className='mx-auto flex justify-between items-center bg-light text-stone-800 ps-8 h-full border border-stone-800'>
-        <div className='text-xl py-2 pr-4 font-bold h-full border-r border-stone-800 uppercase'>showtell</div>
+        <div className={`text-xl py-2 pr-4 font-bold h-full border-r border-stone-800 uppercase ${playfair.className}`}>showtell</div>
 
         {/* Hamburger Button for mobile */}
         <button

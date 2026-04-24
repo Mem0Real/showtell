@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { playfair } from '@/lib/fonts';
 
 // SVG Scribble Path Component
 const ScribbleDivider = () => {
@@ -226,7 +227,7 @@ export const ClipMask = () => {
       {/* Content */}
       <motion.div style={{ opacity, scale }} className='relative z-10 max-w-4xl mx-auto px-4 text-center'>
         {/* Motto */}
-        <h2 className='text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight cursor-pointer'>
+        <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight cursor-pointer ${playfair.className}`}>
           {motto.split('').map((char, index) => (
             <FloatingChar key={index} char={char} index={index} />
           ))}

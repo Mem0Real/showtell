@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { playfair } from '@/lib/fonts';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -61,9 +62,9 @@ export const Footer = () => {
             <Link href='/' className='inline-block mb-6'>
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className='text-2xl font-bold bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent'
+                className={`text-2xl font-bold bg-linear-to-r from-white to-gray-400 bg-clip-text text-transparent ${playfair.className}`}
               >
-                SHOWTEL
+                SHOWTELL
               </motion.div>
             </Link>
             <p className='text-gray-400 text-sm leading-relaxed mb-6'>

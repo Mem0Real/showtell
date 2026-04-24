@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 import { GeometricParticles } from './GeometricParticles';
+import { playfair } from '@/lib/fonts';
 
 const contactInfo = [
   {
@@ -141,7 +142,7 @@ export const Contact = () => {
           >
             Get in Touch
           </motion.span>
-          <h2 className='text-5xl md:text-6xl font-bold text-gray-900 mb-4'>Let's Start a Conversation</h2>
+          <h2 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-4 ${playfair.className}`}>Let's Start a Conversation</h2>
           <p className='text-gray-600 text-lg max-w-2xl mx-auto'>
             Have a question or want to learn more? We'd love to hear from you.
           </p>
@@ -160,7 +161,7 @@ export const Contact = () => {
                 key={info.label}
                 href={info.href}
                 target={info.label === 'Location' ? '_blank' : undefined}
-                className='group p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300'
+                className='group p-4 bg-white/30 lg:bg-white rounded-xl border border-gray-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300'
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}

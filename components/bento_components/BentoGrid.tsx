@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { BentoCard } from '@/components/bento_components/BentoCard';
 import { ModelViewer } from '@/components/bento_components/ModelViewer';
 import { ModelScene } from '@/components/bento_components/ModelScene';
+import { playfair } from '@/lib/fonts';
 
 interface BentoItem {
   id: string;
@@ -144,7 +145,7 @@ export const BentoGrid = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className='text-5xl md:text-6xl font-bold text-gray-900 mb-4'>Explore More Properties</h2>
+            <h2 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-4 ${playfair.className}`}>Explore More Properties</h2>
             <p className='text-gray-600 text-lg max-w-2xl'>
               Discover our curated collection of unique stays. Click to view in immersive 3D.
             </p>

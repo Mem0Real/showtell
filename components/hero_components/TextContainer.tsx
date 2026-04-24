@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useTransform, useScroll } from 'motion/react';
 
-import { inter } from '@/lib/fonts';
+import { inter, playfair } from '@/lib/fonts';
 import { MouseScrollIcon } from '@/components/hero_components/MouseScrollIcon';
 
 export const TextContainer = ({ phase, showOverlayContent }: any) => {
@@ -51,7 +51,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
     <>
       {/* Split Text */}
       <motion.div
-        className={`'relative z-10 w-full h-full flex justify-center items-center gap-6'`}
+        className={`relative z-10 w-full h-full flex justify-center items-center gap-6 ${playfair.className}`}
         animate={phase === 'loading' ? 'loading' : undefined}
         variants={pulseVariants as any}
       >
@@ -60,7 +60,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
           variants={textVariants as any}
           initial='initial'
           animate={phase}
-          className={`${inter.className} text-5xl md:text-9xl font-bold text-stone-800`}
+          className={`${playfair.className} text-3xl md:text-5xl lg:text-9xl font-bold text-stone-800`}
         >
           SHOW
         </motion.h1>
@@ -70,7 +70,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
           variants={textVariants as any}
           initial='initial'
           animate={phase}
-          className={`${inter.className} text-5xl md:text-9xl font-bold text-stone-800`}
+          className={`${playfair.className} text-3xl md:text-5xl lg:text-9xl font-bold text-stone-800`}
         >
           TELL
         </motion.h1>
@@ -91,7 +91,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className='text-white text-2xl md:text-4xl font-extralight pb-4 capitalize'
+                className={`text-white text-2xl md:text-4xl font-extralight pb-4 capitalize ${playfair.className}`}
               >
                 Welcome to showtell
               </motion.h2>

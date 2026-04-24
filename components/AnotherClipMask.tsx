@@ -1,5 +1,6 @@
 'use client';
 
+import { playfair } from '@/lib/fonts';
 import { motion } from 'framer-motion';
 
 export const AnotherClipMask = () => {
@@ -109,7 +110,7 @@ export const AnotherClipMask = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <h2 className='text-5xl md:text-7xl font-bold text-gray-900 mb-4'>{motto}</h2>
+            <h2 className={`text-5xl md:text-7xl font-bold text-gray-900 mb-4 ${playfair.className}`}>{motto}</h2>
             <div className='w-24 h-1 bg-linear-to-r from-transparent via-gray-400 to-transparent mx-auto mt-6' />
             <p className='mt-6 text-gray-600 text-lg max-w-md mx-auto'>
               Discover extraordinary rooms designed to inspire and delight you
