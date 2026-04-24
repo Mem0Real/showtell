@@ -28,8 +28,8 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   // Video options
   const videoOptions = [
     { label: 'Exterior', src: hotel.videoSrc },
-    { label: 'Living Room', src: '/videos/v1.mkv' },
-    { label: 'Bedroom', src: '/videos/v2.mkv' },
+    { label: 'Living Room', src: '/videos/living.mp4' },
+    { label: 'Bedroom', src: '/videos/bedroom.mp4' },
   ];
 
   // Sync isDragging state to ref for use in native event listeners
