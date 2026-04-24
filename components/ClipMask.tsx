@@ -175,8 +175,8 @@ const FloatingChar = ({ char, index }: { char: string; index: number }) => {
       whileInView={{ opacity: 1, y: 0, rotate: 0 }}
       viewport={{ once: true }}
       transition={{
-        duration: 0.5,
-        delay: 0.1 * index,
+        duration: 0.3,
+        delay: 0.05 * index,
         type: 'spring',
         stiffness: 100,
       }}
@@ -227,7 +227,7 @@ export const ClipMask = () => {
       {/* Content */}
       <motion.div style={{ opacity, scale }} className='relative z-10 max-w-4xl mx-auto px-4 text-center'>
         {/* Motto */}
-        <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight cursor-pointer ${playfair.className}`}>
+        <h2 className={`text-2xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight cursor-pointer ${playfair.className}`}>
           {motto.split('').map((char, index) => (
             <FloatingChar key={index} char={char} index={index} />
           ))}

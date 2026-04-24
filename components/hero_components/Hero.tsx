@@ -52,6 +52,28 @@ export const Hero = () => {
   useEffect(() => {
     if (!videoLoaded) return;
 
+    // Check if user has already scrolled past hero
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const heroHeight = window.innerHeight;
+
+      // If scrolled more than 20% of hero height, skip animations
+      if (scrollY > heroHeight * 0.2) {
+        // Jump straight to complete state
+        setPhase('complete');
+        setShowOverlayContent(true);
+        if (videoRef.current) {
+          videoRef.current.play();
+        }
+      }
+    };
+
+    // Check immediately
+    handleScroll();
+
+    // Also listen for scroll events during animation
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     const timers: NodeJS.Timeout[] = [];
 
     // Phase 2: Split text and show small video
@@ -72,8 +94,10 @@ export const Hero = () => {
         }
       }, 2500),
     );
-
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      timers.forEach(clearTimeout);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [videoLoaded]);
 
   return (
