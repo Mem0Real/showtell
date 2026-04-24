@@ -42,6 +42,9 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     const card = cardRef.current;
     if (!card) return;
 
+    let seekAnimationFrame: number;
+    let targetTime: number | null = null;
+
     const handleTouchStartNative = (e: TouchEvent) => {
       if (!videoReady || !videoRef.current) return;
 
@@ -49,10 +52,11 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       setIsDragging(true);
       lastX.current = e.touches[0].clientX;
 
-      // Pause video and remember current time
-      if (videoRef.current) {
-        videoRef.current.pause();
+      // Cancel any ongoing seek animation
+      if (seekAnimationFrame) {
+        cancelAnimationFrame(seekAnimationFrame);
       }
+      targetTime = null;
     };
 
     const handleTouchMoveNative = (e: TouchEvent) => {
@@ -69,42 +73,63 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         const step = deltaX * 0.03;
         let newTime = video.currentTime + step;
 
+        // Wrap around
         if (newTime < 0) newTime = video.duration + newTime;
         if (newTime > video.duration) newTime = newTime - video.duration;
 
-        // Force update by briefly playing
-        video.currentTime = newTime;
-
-        // This forces the browser to render the new frame
-        video
-          .play()
-          .then(() => {
-            video.pause();
-          })
-          .catch(() => {
-            // Fallback for browsers that block autoplay
-            video.currentTime = newTime;
-          });
+        // Store target time instead of setting directly
+        targetTime = newTime;
       }
     };
 
     const handleTouchEndNative = () => {
       setIsDragging(false);
-      // Resume normal playback if needed
-      if (videoRef.current && videoRef.current.paused) {
-        videoRef.current.play().catch(() => {});
-        videoRef.current.pause();
+      targetTime = null;
+
+      if (seekAnimationFrame) {
+        cancelAnimationFrame(seekAnimationFrame);
+      }
+    };
+
+    // Use requestAnimationFrame for smooth seeking
+    const seekLoop = () => {
+      if (targetTime !== null && videoRef.current) {
+        const video = videoRef.current;
+        const diff = targetTime - video.currentTime;
+
+        // If difference is small enough, snap to target
+        if (Math.abs(diff) < 0.01) {
+          video.currentTime = targetTime;
+        } else {
+          // Smooth lerp towards target
+          video.currentTime += diff * 0.5;
+        }
+
+        seekAnimationFrame = requestAnimationFrame(seekLoop);
+      }
+    };
+
+    // Override the move handler to also start the seek loop
+    const handleTouchMoveWithSeek = (e: TouchEvent) => {
+      handleTouchMoveNative(e);
+
+      // Start seek loop if not already running
+      if (!seekAnimationFrame && isDraggingRef.current) {
+        seekAnimationFrame = requestAnimationFrame(seekLoop);
       }
     };
 
     card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
-    card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
+    card.addEventListener('touchmove', handleTouchMoveWithSeek, { passive: false });
     card.addEventListener('touchend', handleTouchEndNative);
 
     return () => {
       card.removeEventListener('touchstart', handleTouchStartNative);
-      card.removeEventListener('touchmove', handleTouchMoveNative);
+      card.removeEventListener('touchmove', handleTouchMoveWithSeek);
       card.removeEventListener('touchend', handleTouchEndNative);
+      if (seekAnimationFrame) {
+        cancelAnimationFrame(seekAnimationFrame);
+      }
     };
   }, [videoReady]);
 
