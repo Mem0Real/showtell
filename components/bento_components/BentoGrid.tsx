@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { BentoCard } from '@/components/bento_components/BentoCard';
 import { ModelViewer } from '@/components/bento_components/ModelViewer';
+import { ModelScene } from '@/components/bento_components/ModelScene';
 
 interface BentoItem {
   id: string;
@@ -130,7 +131,7 @@ const bentoItems: BentoItem[] = [
 ];
 
 export const BentoGrid = () => {
-  const [selectedModel, setSelectedModel] = useState<BentoItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<BentoItem | null>(null);
 
   return (
     <div className='w-full h-full'>
@@ -152,19 +153,18 @@ export const BentoGrid = () => {
           {/* Bento Grid */}
           <div className='grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] grid-flow-dense'>
             {bentoItems.map((item, index) => (
-              <BentoCard key={item.id} item={item} onOpenModel={setSelectedModel} />
+              <BentoCard key={item.id} item={item} onOpenModel={setSelectedItem} />
             ))}
           </div>
         </div>
       </section>
 
       {/* 3D Model Modal */}
-      <ModelViewer
-        isOpen={!!selectedModel}
-        onClose={() => setSelectedModel(null)}
-        modelPath={selectedModel?.modelPath}
-        title={selectedModel?.title}
-      />
+      {selectedItem && (
+        <ModelViewer isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} title={selectedItem.title}>
+          <ModelScene modelPath={selectedItem.modelPath} />
+        </ModelViewer>
+      )}
     </div>
   );
 };
