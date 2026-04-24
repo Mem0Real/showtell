@@ -39,6 +39,22 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     { label: 'Bedroom', src: '/frames/bedroom' },
   ];
 
+  // Resize canva to proper dimensions
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.scale(dpr, dpr);
+  }, []);
+
+  // Check dragging
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
@@ -57,11 +73,20 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
       img.onload = () => {
         loaded++;
+        // if (loaded === TOTAL_FRAMES) {
+        //   images.current = imgs;
+        //   setFramesReady(true);
+        //   setIsLoading(false);
+        //   drawFrame(0);
+        // }
+        if (loaded === 1) {
+          drawFrame(0);
+          setIsLoading(false);
+        }
+
         if (loaded === TOTAL_FRAMES) {
           images.current = imgs;
           setFramesReady(true);
-          setIsLoading(false);
-          drawFrame(0);
         }
       };
 
@@ -89,8 +114,9 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
         let index = Math.floor(currentFrame.current);
 
-        if (index < 0) index = TOTAL_FRAMES - 1;
-        if (index >= TOTAL_FRAMES) index = 0;
+        // if (index < 0) index = TOTAL_FRAMES - 1;
+        // if (index >= TOTAL_FRAMES) index = 0;
+        index = wrapFrame(index);
 
         drawFrame(index);
       }
@@ -101,14 +127,21 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     loop();
   }, [framesReady]);
 
+  // Wrapping logic
+  const wrapFrame = (frame: number) => {
+    return (frame + TOTAL_FRAMES) % TOTAL_FRAMES;
+  };
+
   // Drag logic
   const handleDrag = (deltaX: number) => {
     const sensitivity = 0.2;
 
     targetFrame.current += deltaX * sensitivity;
 
-    if (targetFrame.current < 0) targetFrame.current = TOTAL_FRAMES - 1;
-    if (targetFrame.current >= TOTAL_FRAMES) targetFrame.current = 0;
+    // if (targetFrame.current < 0) targetFrame.current = TOTAL_FRAMES - 1;
+    // if (targetFrame.current >= TOTAL_FRAMES) targetFrame.current = 0;
+
+    targetFrame.current = wrapFrame(targetFrame.current);
   };
 
   // Mouse
@@ -142,8 +175,14 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     const start = (e: TouchEvent) => {
       if (!framesReady) return;
+
+      const target = e.target as HTMLElement;
+
+      if (target.closest('.dropdown-menu')) return;
+
       e.preventDefault();
       setIsDragging(true);
+
       setIsHovered(true);
       lastX.current = e.touches[0].clientX;
     };
@@ -212,7 +251,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           <div className='absolute top-4 left-4 z-10'>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className='bg-black/50 text-white px-4 py-2 rounded-lg'
+              className='bg-black/50 text-white px-4 py-2 rounded-lg dropdown-menu'
             >
               {videoOptions.find((opt) => opt.src === currentSet)?.label}
             </button>
