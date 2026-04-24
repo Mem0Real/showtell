@@ -1,35 +1,49 @@
-// components/ModelViewer.tsx
 'use client';
 
-import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { stopLenis, startLenis } from '@/lib/lenis';
 
 interface ModelViewerProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  children?: React.ReactNode; // This is where ModelScene goes
+  children?: React.ReactNode;
 }
 
 export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }: ModelViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
-  const scrollYRef = useRef(0);
 
-  // Save scroll position when opening
+  // Reset loading when modal opens
   useEffect(() => {
     if (isOpen) {
-      scrollYRef.current = window.scrollY;
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
+  }, [isOpen]);
+
+  // Handle Lenis scroll lock using the exported functions
+  useEffect(() => {
+    if (isOpen) {
+      stopLenis();
+    } else {
+      startLenis();
+    }
+
+    return () => {
+      startLenis(); // Ensure lenis restarts if component unmounts
+    };
   }, [isOpen]);
 
   // Listen for fullscreen changes
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const isCurrentlyFullscreen = !!(
-        document.fullscreenElement ||
-        (document as any).webkitFullscreenElement
-      );
+      const isCurrentlyFullscreen = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
       setIsFullscreen(isCurrentlyFullscreen);
     };
 
@@ -61,22 +75,28 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
   // Handle close
   const handleClose = useCallback(() => {
     if (isFullscreen) {
-      document.exitFullscreen().then(() => {
-        onClose();
-      }).catch(() => {
-        onClose();
-      });
+      document
+        .exitFullscreen()
+        .then(() => {
+          onClose();
+        })
+        .catch(() => {
+          onClose();
+        });
     } else {
       onClose();
     }
   }, [isFullscreen, onClose]);
 
   // Handle backdrop click
-  const handleBackdropClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      handleClose();
-    }
-  }, [handleClose]);
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) {
+        handleClose();
+      }
+    },
+    [handleClose],
+  );
 
   // Handle escape key
   useEffect(() => {
@@ -100,8 +120,8 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          transition={{ duration: 0.3 }}
+          className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center'
           onClick={handleBackdropClick}
         >
           {/* Modal Container */}
@@ -110,54 +130,78 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3 }}
             onClick={(e) => e.stopPropagation()}
             className={`
-              bg-gray-900 shadow-2xl flex flex-col
-              ${isFullscreen 
-                ? 'fixed inset-0' 
-                : 'relative w-[90vw] h-[80vh] max-w-6xl rounded-2xl overflow-hidden'
-              }
+              bg-[#f1f5f9] shadow-2xl flex flex-col
+              ${isFullscreen ? 'fixed inset-0' : 'relative w-[90vw] h-[80vh] max-w-6xl rounded-2xl overflow-hidden'}
             `}
           >
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+            <div className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-white/90 to-transparent'>
               <div>
-                <h2 className="text-white text-xl font-bold">{title}</h2>
-                <p className="text-white/60 text-sm">Drag to rotate • Scroll to zoom</p>
+                <h2 className='text-gray-900 text-xl font-bold'>{title}</h2>
+                <p className='text-gray-500 text-sm'>Drag to rotate • Scroll to zoom</p>
               </div>
-              
-              <div className="flex items-center gap-2">
+
+              <div className='flex items-center gap-2'>
                 {/* Fullscreen Button */}
                 <button
                   onClick={toggleFullscreen}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-white"
+                  className='p-2 rounded-lg bg-white/80 hover:bg-white shadow-sm border border-gray-200 transition text-gray-700'
                   title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     {isFullscreen ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25'
+                      />
                     ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15'
+                      />
                     )}
                   </svg>
                 </button>
-                
+
                 {/* Close Button */}
                 <button
                   onClick={handleClose}
-                  className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition text-white"
-                  title="Close"
+                  className='p-2 rounded-lg bg-white/80 hover:bg-white shadow-sm border border-gray-200 transition text-gray-700'
+                  title='Close'
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
                   </svg>
                 </button>
               </div>
             </div>
 
+            {/* Loading Overlay */}
+            <AnimatePresence>
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className='absolute inset-0 z-20 bg-[#f1f5f9] flex items-center justify-center'
+                >
+                  <div className='flex flex-col items-center gap-4'>
+                    <div className='w-12 h-12 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin' />
+                    <p className='text-gray-600 text-sm font-medium'>Loading 3D Model...</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* 3D Scene Content */}
-            <div className="flex-1">
+            <div className='flex-1 bg-[#f1f5f9]' onLoad={() => setIsLoading(false)}>
               {children}
             </div>
           </motion.div>
@@ -165,4 +209,4 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
       )}
     </AnimatePresence>
   );
-}
+};

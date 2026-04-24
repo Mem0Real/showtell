@@ -20,3 +20,10 @@ body {
   --color-accentSoft: #e7d3a8;
   --color-muted: #a1a1aa;
 }
+
+html.overflow-hidden,
+body.overflow-hidden {
+  overflow: hidden !important;
+  /* Prevent layout shift from scrollbar disappearing */
+  padding-right: var(--scrollbar-width, 0px);
+}
