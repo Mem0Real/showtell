@@ -7,10 +7,10 @@ import { playfair } from '@/lib/fonts';
 // Grid Component
 export const HotelGrid = () => {
   const hotels = [
-    { name: 'Hilton Hotel', videoSrc: '/videos/v3.mkv' },
-    { name: 'Radison Blu Hotel', videoSrc: '/videos/v3.mkv' },
-    { name: 'Getfam Hotel', videoSrc: '/videos/v3.mkv' },
-    { name: 'Sarem International Hotel', videoSrc: '/videos/v3.mkv' },
+    { name: 'Hilton Hotel', videoSrc: '/videos/exterior.mkv' },
+    { name: 'Radison Blu Hotel', videoSrc: '/videos/exterior.mkv' },
+    { name: 'Getfam Hotel', videoSrc: '/videos/exterior.mkv' },
+    { name: 'Sarem International Hotel', videoSrc: '/videos/exterior.mkv' },
   ];
 
   return (
