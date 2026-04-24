@@ -28,7 +28,7 @@ const bentoItems: BentoItem[] = [
     title: 'Inter Luxury',
     location: 'Addis Ababa, Urael',
     description: 'A tropical paradise with private infinity pool',
-    image: '/images/hotels/inter-luxury.jpg',
+    image: '/images/hotels/inter-luxury.webp',
     size: 'large',
     modelPath: '/models/villa-serene.glb',
     stats: {
@@ -42,7 +42,7 @@ const bentoItems: BentoItem[] = [
     title: 'Sheraton Addis',
     location: 'Addis Ababa, Ambassador',
     description: 'Modern city living at its finest',
-    image: '/images/hotels/sheraton.jpg',
+    image: '/images/hotels/sheraton.webp',
     size: 'medium',
     stats: {
       rooms: 220,
@@ -55,7 +55,7 @@ const bentoItems: BentoItem[] = [
     title: 'Hyatt Regency',
     location: 'Addis Ababa, Legahar',
     description: 'Refreshing retreat with stunning views',
-    image: '/images/hotels/hyatt-regency.jpg',
+    image: '/images/hotels/hyatt-regency.webp',
     size: 'tall',
     stats: {
       rooms: 60,
@@ -68,7 +68,7 @@ const bentoItems: BentoItem[] = [
     title: 'Elilly International',
     location: 'Addis Ababa, Urael',
     description: 'Indoor experience for the whole family',
-    image: '/images/hotels/elilly-international.jpg',
+    image: '/images/hotels/elilly-international.webp',
     size: 'small',
     modelPath: '/models/beach-house.glb',
     stats: {
@@ -82,7 +82,7 @@ const bentoItems: BentoItem[] = [
     title: 'Golden Tulip',
     location: 'Addis Ababa, Wollo-Sefer',
     description: 'Luxury oasis with city views',
-    image: '/images/hotels/golden-tulip.jpg',
+    image: '/images/hotels/golden-tulip.webp',
     size: 'wide',
     stats: {
       rooms: 150,
@@ -95,7 +95,7 @@ const bentoItems: BentoItem[] = [
     title: 'Haile Grand',
     location: 'Addis Ababa, Megenagna',
     description: 'Futuristic living with city views',
-    image: '/images/hotels/haile-grand.jpg',
+    image: '/images/hotels/haile-grand.webp',
     size: 'small',
     stats: {
       rooms: 400,
@@ -108,7 +108,7 @@ const bentoItems: BentoItem[] = [
     title: 'Debre Damo',
     location: 'Addis Ababa, Urael',
     description: 'Place where you will be treated as a family',
-    image: '/images/hotels/debre-damo.jpg',
+    image: '/images/hotels/debre-damo.webp',
     size: 'large',
     stats: {
       rooms: 100,
@@ -121,7 +121,7 @@ const bentoItems: BentoItem[] = [
     title: 'Best Western Plus',
     location: 'Addis Ababa, Gerji',
     description: 'High rise hotel for the classy',
-    image: '/images/hotels/best-western-plus.jpg',
+    image: '/images/hotels/best-western-plus.webp',
     size: 'large',
     stats: {
       rooms: 600,
