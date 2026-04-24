@@ -36,7 +36,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
     }
 
     return () => {
-      startLenis(); // Ensure lenis restarts if component unmounts
+      startLenis();
     };
   }, [isOpen]);
 
