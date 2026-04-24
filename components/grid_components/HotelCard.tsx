@@ -1,3 +1,4 @@
+// HotelCard.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -22,16 +23,71 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const lastX = useRef(0);
+  const isDraggingRef = useRef(false); // Use ref for synchronous access
 
-  // Video options (you can customize these per hotel)
+  // Video options
   const videoOptions = [
     { label: 'Exterior', src: hotel.videoSrc },
     { label: 'Living Room', src: '/videos/v1.mkv' },
     { label: 'Bedroom', src: '/videos/v2.mkv' },
-    // { label: 'Bathroom', src: '/videos/v2.mkv' },
-    // { label: 'Outside View', src: '/videos/v3.mkv' },
   ];
 
+  // Sync isDragging state to ref for use in native event listeners
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
+
+  // Handle native touch events with passive: false
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const handleTouchStartNative = (e: TouchEvent) => {
+      if (!videoReady || !videoRef.current) return;
+      
+      e.preventDefault();
+      setIsDragging(true);
+      lastX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMoveNative = (e: TouchEvent) => {
+      if (!isDraggingRef.current || !videoReady || !videoRef.current) return;
+      
+      e.preventDefault();
+
+      const currentX = e.touches[0].clientX;
+      const deltaX = currentX - lastX.current;
+      lastX.current = currentX;
+
+      if (Math.abs(deltaX) > 1 && videoRef.current) {
+        const video = videoRef.current;
+        const step = deltaX * 0.03;
+        let newTime = video.currentTime + step;
+
+        if (newTime < 0) newTime = video.duration + newTime;
+        if (newTime > video.duration) newTime = newTime - video.duration;
+
+        video.currentTime = newTime;
+      }
+    };
+
+    const handleTouchEndNative = () => {
+      setIsDragging(false);
+    };
+
+    // Add native event listeners with passive: false
+    card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
+    card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
+    card.addEventListener('touchend', handleTouchEndNative);
+
+    return () => {
+      card.removeEventListener('touchstart', handleTouchStartNative);
+      card.removeEventListener('touchmove', handleTouchMoveNative);
+      card.removeEventListener('touchend', handleTouchEndNative);
+    };
+  }, [videoReady]);
+
+  // Video loading effect
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -43,31 +99,16 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       }
     };
 
-    const handleError = (e: Event) => {
-      console.error('Video loading failed:', e);
-      setIsLoading(false);
-      // Fallback: set a timeout to retry
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.load();
-        }
-      }, 1000);
-    };
-
-    // Check if already loaded (cached)
     if (video.readyState >= 3) {
       handleLoadedData();
     } else {
       video.addEventListener('loadeddata', handleLoadedData);
-      video.addEventListener('error', handleError);
-      video.addEventListener('canplay', handleLoadedData); // Additional fallback
+      video.addEventListener('canplay', handleLoadedData);
+      return () => {
+        video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('canplay', handleLoadedData);
+      };
     }
-
-    return () => {
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('error', handleError);
-      video.removeEventListener('canplay', handleLoadedData);
-    };
   }, [currentVideo]);
 
   // Preload video on mount
@@ -75,14 +116,11 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Force preload
     video.preload = 'auto';
     video.load();
 
-    // Set timeout for slow connections
     const timeout = setTimeout(() => {
       if (!videoReady) {
-        console.log('Video load timeout - retrying');
         video.load();
       }
     }, 5000);
@@ -90,6 +128,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     return () => clearTimeout(timeout);
   }, []);
 
+  // Mouse handlers (unchanged)
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!videoReady || !videoRef.current) return;
@@ -137,41 +176,10 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     setShowDropdown(false);
   };
 
-  // Touch support for mobile
-  const touchStartX = useRef(0);
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      if (!videoReady || !videoRef.current) return;
-      setIsDragging(true);
-      touchStartX.current = e.touches[0].clientX;
-      lastX.current = e.touches[0].clientX;
-    },
-    [videoReady],
-  );
-
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!isDragging || !videoReady || !videoRef.current) return;
-
-      const deltaX = e.touches[0].clientX - lastX.current;
-      lastX.current = e.touches[0].clientX;
-
-      const video = videoRef.current;
-      const step = deltaX * 0.02;
-      let newTime = video.currentTime + step;
-
-      if (newTime < 0) newTime = video.duration + newTime;
-      if (newTime > video.duration) newTime = newTime - video.duration;
-
-      video.currentTime = newTime;
-    },
-    [isDragging, videoReady],
-  );
-
   return (
     <motion.div
       ref={cardRef}
-      className='relative w-full h-125 rounded-2xl overflow-hidden group'
+      className='relative w-full h-125 rounded-2xl overflow-hidden group touch-none'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -180,9 +188,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={() => setIsDragging(false)}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -190,6 +195,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       whileHover={{ scale: 1.02 }}
       style={{
         cursor: !videoReady ? 'wait' : isDragging ? 'grabbing' : isHovered ? 'grab' : 'default',
+        touchAction: 'none', // Prevent browser touch gestures
       }}
     >
       {/* Video */}
@@ -198,10 +204,9 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         src={currentVideo}
         muted
         preload='auto'
-        className='absolute inset-0 w-full h-full object-cover'
+        className='absolute inset-0 w-full h-full object-cover pointer-events-none'
         loop
         playsInline
-        // poster='/images/hotel_placeholder.png'
       />
 
       {/* Loading State */}
@@ -222,7 +227,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       </AnimatePresence>
 
       {/* Overlay gradient */}
-      <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent' />
+      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none' />
 
       {/* Dropdown */}
       <AnimatePresence>
@@ -271,10 +276,10 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                           e.stopPropagation();
                           handleVideoChange(option.src);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition ${
+                        className={`w-full text-left px-4 py-2.5 text-sm transition cursor-pointer ${
                           currentVideo === option.src
                             ? 'text-white bg-white/20'
-                            : 'text-white/70 hover:text-white hover:bg-white/10 cursor-pointer'
+                            : 'text-white/70 hover:text-white hover:bg-white/10'
                         }`}
                       >
                         {option.label}
@@ -288,9 +293,9 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         )}
       </AnimatePresence>
 
-      {/* Hotel name - slides down on hover */}
+      {/* Hotel name */}
       <motion.div
-        className='absolute bottom-0 left-0 right-0 p-6'
+        className='absolute bottom-0 left-0 right-0 p-6 pointer-events-none'
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isHovered ? 100 : 0,
@@ -299,52 +304,10 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
         <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
-        <p className='text-gray-600 text-sm'>{videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}</p>
+        <p className='text-white/60 text-sm'>
+          {videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}
+        </p>
       </motion.div>
-
-      {/* Dragging feedback */}
-      {/* <AnimatePresence>
-        {isDragging && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className='absolute inset-0 border-2 border-white/40 rounded-2xl pointer-events-none'
-          >
-            <motion.div
-              className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-md rounded-full px-6 py-3'
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-            >
-              <div className='flex items-center gap-3 text-white'>
-                <motion.div animate={{ x: [-5, 5, -5] }} transition={{ duration: 2, repeat: Infinity }}>
-                  ←
-                </motion.div>
-                <span className='text-sm'>Dragging</span>
-                <motion.div animate={{ x: [5, -5, 5] }} transition={{ duration: 2, repeat: Infinity }}>
-                  →
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence> */}
-
-      {/* Progress indicator */}
-      {/* <motion.div
-        className='absolute bottom-0 left-0 right-0 h-0.5 bg-white/10'
-        animate={{ opacity: isHovered ? 1 : 0 }}
-      >
-        <motion.div
-          className='h-full bg-white/80'
-          style={{
-            width:
-              videoReady && videoRef.current
-                ? `${(videoRef.current.currentTime / videoRef.current.duration) * 100}%`
-                : '0%',
-          }}
-        />
-      </motion.div> */}
     </motion.div>
   );
 };
