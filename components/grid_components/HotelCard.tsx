@@ -20,64 +20,30 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const [currentVideo, setCurrentVideo] = useState(hotel.videoSrc);
   const [showDropdown, setShowDropdown] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const lastX = useRef(0);
-  const isDraggingRef = useRef(false);
-  const animationFrameRef = useRef<number>(null);
+  const isDraggingRef = useRef(false); // Use ref for synchronous access
 
+  // Video options
   const videoOptions = [
     { label: 'Exterior', src: hotel.videoSrc },
     { label: 'Living Room', src: '/videos/v1.mkv' },
     { label: 'Bedroom', src: '/videos/v2.mkv' },
   ];
 
-  // Sync isDragging state to ref
+  // Sync isDragging state to ref for use in native event listeners
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
-  // Draw video frame to canvas continuously
-  useEffect(() => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const drawFrame = () => {
-      if (video.readyState >= 2) {
-        // Scale canvas to match container
-        const rect = canvas.parentElement?.getBoundingClientRect();
-        if (rect) {
-          canvas.width = rect.width;
-          canvas.height = rect.height;
-        }
-        
-        // Draw current video frame
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      }
-      animationFrameRef.current = requestAnimationFrame(drawFrame);
-    };
-
-    drawFrame();
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [videoReady]);
-
-  // Handle native touch events
+  // Handle native touch events with passive: false
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
 
     const handleTouchStartNative = (e: TouchEvent) => {
       if (!videoReady || !videoRef.current) return;
-      
+
       e.preventDefault();
       setIsDragging(true);
       lastX.current = e.touches[0].clientX;
@@ -85,14 +51,14 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     const handleTouchMoveNative = (e: TouchEvent) => {
       if (!isDraggingRef.current || !videoReady || !videoRef.current) return;
-      
+
       e.preventDefault();
 
       const currentX = e.touches[0].clientX;
       const deltaX = currentX - lastX.current;
       lastX.current = currentX;
 
-      if (Math.abs(deltaX) > 0 && videoRef.current) {
+      if (Math.abs(deltaX) > 1 && videoRef.current) {
         const video = videoRef.current;
         const step = deltaX * 0.03;
         let newTime = video.currentTime + step;
@@ -108,6 +74,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       setIsDragging(false);
     };
 
+    // Add native event listeners with passive: false
     card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
     card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
     card.addEventListener('touchend', handleTouchEndNative);
@@ -143,12 +110,21 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     }
   }, [currentVideo]);
 
-  // Preload video
+  // Preload video on mount
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
     video.preload = 'auto';
     video.load();
+
+    const timeout = setTimeout(() => {
+      if (!videoReady) {
+        video.load();
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // Mouse handlers (unchanged)
@@ -163,7 +139,10 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   );
 
   useEffect(() => {
-    const handleGlobalMouseUp = () => setIsDragging(false);
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
     if (isDragging) {
       window.addEventListener('mouseup', handleGlobalMouseUp);
       return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
@@ -215,24 +194,18 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       whileHover={{ scale: 1.02 }}
       style={{
         cursor: !videoReady ? 'wait' : isDragging ? 'grabbing' : isHovered ? 'grab' : 'default',
-        touchAction: 'none',
+        touchAction: 'none', // Prevent browser touch gestures
       }}
     >
-      {/* Hidden video element - used as source for canvas */}
+      {/* Video */}
       <video
         ref={videoRef}
         src={currentVideo}
         muted
         preload='auto'
-        className='hidden'
+        className='absolute inset-0 w-full h-full object-cover pointer-events-none'
         loop
         playsInline
-      />
-
-      {/* Canvas that displays the video frame */}
-      <canvas
-        ref={canvasRef}
-        className='absolute inset-0 w-full h-full object-cover'
       />
 
       {/* Loading State */}
@@ -330,9 +303,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
         <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
-        <p className='text-white/60 text-sm'>
-          {videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}
-        </p>
+        <p className='text-white/60 text-sm'>{videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}</p>
       </motion.div>
     </motion.div>
   );
