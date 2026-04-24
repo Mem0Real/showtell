@@ -68,10 +68,12 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         if (Math.abs(diff) > video.duration / 2) {
           diff -= Math.sign(diff) * video.duration;
         }
+        // const nextTime = video.currentTime + diff * 0.2;
+        // video.currentTime = (nextTime + video.duration) % video.duration;
 
-        const nextTime = video.currentTime + diff * 0.2;
-
-        video.currentTime = (nextTime + video.duration) % video.duration;
+        if (Math.abs(diff) > 0.001) {
+          video.currentTime = (video.currentTime + diff * 0.25 + video.duration) % video.duration;
+        }
       }
 
       rafId.current = requestAnimationFrame(update);
@@ -88,6 +90,8 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     const video = videoRef.current;
     if (!video || !video.duration) return;
 
+    video.play().catch(() => {});
+
     const step = deltaX * 0.005;
 
     let newTime = targetTime.current + step;
@@ -98,7 +102,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     targetTime.current = newTime;
   };
 
-  // Mouse
+  // Mouse Down
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!videoReady || !videoRef.current) return;
@@ -111,6 +115,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     [videoReady],
   );
 
+  // Mouse Move
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (!isDraggingRef.current || !videoReady) return;
@@ -123,6 +128,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     [videoReady],
   );
 
+  // Mouse Up
   useEffect(() => {
     const up = () => setIsDragging(false);
 
@@ -137,6 +143,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     const card = cardRef.current;
     if (!card) return;
 
+    // Touch Start
     const start = (e: TouchEvent) => {
       if (!videoReady || !videoRef.current) return;
 
@@ -151,10 +158,11 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       targetTime.current = videoRef.current.currentTime;
     };
 
+    // Touch Move
     const move = (e: TouchEvent) => {
       if (!isDraggingRef.current || !videoReady) return;
 
-      e.preventDefault();
+      // e.preventDefault();
 
       const x = e.touches[0].clientX;
       const deltaX = x - lastX.current;
@@ -163,7 +171,14 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       applyDrag(deltaX);
     };
 
-    const end = () => setIsDragging(false);
+    // Touch end
+    const end = () => {
+      setIsDragging(false);
+      const video = videoRef.current;
+      if (!video) return;
+
+      video.pause();
+    };
 
     card.addEventListener('touchstart', start, { passive: false });
     card.addEventListener('touchmove', move, { passive: false });
