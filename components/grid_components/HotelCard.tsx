@@ -36,7 +36,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
-  // Handle native touch events with passive: false
+  // Handle native touch events
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
@@ -46,6 +46,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
       e.preventDefault();
       setIsDragging(true);
+      setIsHovered(true); // Show dropdown button
       lastX.current = e.touches[0].clientX;
     };
 
@@ -72,9 +73,10 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     const handleTouchEndNative = () => {
       setIsDragging(false);
+      // Keep hovered state so dropdown stays visible
+      // Don't change anything here - let the dropdown buttons handle themselves
     };
 
-    // Add native event listeners with passive: false
     card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
     card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
     card.addEventListener('touchend', handleTouchEndNative);
@@ -127,7 +129,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Mouse handlers (unchanged)
+  // Mouse handlers
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!videoReady || !videoRef.current) return;
@@ -235,15 +237,20 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className='absolute top-4 left-4 z-10'
+            className='absolute top-4 left-4 z-10 dropdown-menu'
           >
-            <div className='relative'>
+            <div className='relative dropdown-menu'>
               <button
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowDropdown(!showDropdown);
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
-                className='bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/70 transition cursor-pointer'
+                className='bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/70 transition cursor-pointer dropdown-menu pointer-events-auto'
               >
                 <span>{videoOptions.find((opt) => opt.src === currentVideo)?.label || 'Exterior'}</span>
                 <motion.svg
@@ -266,16 +273,21 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className='absolute top-full mt-2 left-0 bg-black/70 backdrop-blur-md rounded-lg overflow-hidden min-w-40'
+                    className='absolute top-full mt-2 left-0 bg-black/70 backdrop-blur-md rounded-lg overflow-hidden min-w-40 dropdown-menu'
                   >
                     {videoOptions.map((option) => (
                       <button
                         key={option.src}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handleVideoChange(option.src);
+                        }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleVideoChange(option.src);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition cursor-pointer ${
+                        className={`w-full text-left px-4 py-2.5 text-sm transition cursor-pointer dropdown-menu ${
                           currentVideo === option.src
                             ? 'text-white bg-white/20'
                             : 'text-white/70 hover:text-white hover:bg-white/10'
