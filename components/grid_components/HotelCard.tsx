@@ -58,7 +58,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       const deltaX = currentX - lastX.current;
       lastX.current = currentX;
 
-      if (Math.abs(deltaX) > 1 && videoRef.current) {
+      if (Math.abs(deltaX) > 0.1 && videoRef.current) {
         const video = videoRef.current;
         const step = deltaX * 0.03;
         let newTime = video.currentTime + step;
