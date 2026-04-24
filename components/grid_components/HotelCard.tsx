@@ -44,22 +44,27 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     const handleTouchStartNative = (e: TouchEvent) => {
       if (!videoReady || !videoRef.current) return;
-      
+
       e.preventDefault();
       setIsDragging(true);
       lastX.current = e.touches[0].clientX;
+
+      // Pause video and remember current time
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
     };
 
     const handleTouchMoveNative = (e: TouchEvent) => {
       if (!isDraggingRef.current || !videoReady || !videoRef.current) return;
-      
+
       e.preventDefault();
 
       const currentX = e.touches[0].clientX;
       const deltaX = currentX - lastX.current;
       lastX.current = currentX;
 
-      if (Math.abs(deltaX) > 1 && videoRef.current) {
+      if (Math.abs(deltaX) > 0 && videoRef.current) {
         const video = videoRef.current;
         const step = deltaX * 0.03;
         let newTime = video.currentTime + step;
@@ -67,15 +72,31 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         if (newTime < 0) newTime = video.duration + newTime;
         if (newTime > video.duration) newTime = newTime - video.duration;
 
+        // Force update by briefly playing
         video.currentTime = newTime;
+
+        // This forces the browser to render the new frame
+        video
+          .play()
+          .then(() => {
+            video.pause();
+          })
+          .catch(() => {
+            // Fallback for browsers that block autoplay
+            video.currentTime = newTime;
+          });
       }
     };
 
     const handleTouchEndNative = () => {
       setIsDragging(false);
+      // Resume normal playback if needed
+      if (videoRef.current && videoRef.current.paused) {
+        videoRef.current.play().catch(() => {});
+        videoRef.current.pause();
+      }
     };
 
-    // Add native event listeners with passive: false
     card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
     card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
     card.addEventListener('touchend', handleTouchEndNative);
@@ -304,9 +325,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
         <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
-        <p className='text-white/60 text-sm'>
-          {videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}
-        </p>
+        <p className='text-white/60 text-sm'>{videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}</p>
       </motion.div>
     </motion.div>
   );

@@ -15,7 +15,7 @@ export const HotelGrid = () => {
 
   return (
     <section className='w-full min-h-screen bg-light py-20 px-4 md:px-8'>
-      <div className='max-w-[85vw] mx-auto'>
+      <div className='max-w-[80vw] md:max-w-[85vw] mx-auto'>
         <motion.div
           className='mb-16'
           initial={{ opacity: 0, y: 20 }}

@@ -101,7 +101,7 @@ export const Hero = () => {
   }, [videoLoaded]);
 
   return (
-    <section className='w-full h-[99vh] px-2 md:px-4 py-2 md:py-4 pb-2'>
+    <section className='relative w-full h-[99vh] px-2 md:px-4 py-2 md:py-4 pb-2'>
       <div className='relative border border-black text-neutral-800 h-full'>
         {/* Navbar */}
         <Navbar showOverlayContent={showOverlayContent} />
