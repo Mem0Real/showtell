@@ -30,9 +30,9 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const rafId = useRef<number | null>(null);
 
   const videoOptions = [
-    { label: 'Exterior', src: hotel.videoSrc },
-    { label: 'Living Room', src: '/videos/v1.mp4' },
-    { label: 'Bedroom', src: '/videos/v2.mp4' },
+    { label: 'Exterior', src: '/videos/exterior.mp4' }, // hotel.videoSrc
+    { label: 'Living Room', src: '/videos/living.mp4' },
+    { label: 'Bedroom', src: '/videos/bedroom.mp4' },
   ];
 
   useEffect(() => {
