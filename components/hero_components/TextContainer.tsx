@@ -45,7 +45,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
   };
 
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const filter = useTransform(scrollYProgress, [0, 0.5], ['blur(0px)', 'blur(20px)']);
+  const filter = useTransform(scrollYProgress, [0.3, 0.85], ['blur(0px)', 'blur(20px)']);
 
   return (
     <>
