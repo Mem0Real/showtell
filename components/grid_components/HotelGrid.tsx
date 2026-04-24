@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { HotelCard } from '@/components/grid_components/HotelCard';
+import { playfair } from '@/lib/fonts';
 
 // Grid Component
 export const HotelGrid = () => {
@@ -21,7 +22,9 @@ export const HotelGrid = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className={`text-5xl md:text-6xl font-bold text-neutral-800 mb-4`}>Properties Showcase</h2>
+          <h2 className={`text-5xl md:text-6xl font-bold text-neutral-800 mb-4 ${playfair.className}`}>
+            Properties Showcase
+          </h2>
           <p className='text-neutral-800/60 text-lg'>Drag on the images to explore every detail</p>
         </motion.div>
 
@@ -41,4 +44,4 @@ export const HotelGrid = () => {
       </div>
     </section>
   );
-}
+};
