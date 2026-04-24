@@ -42,26 +42,19 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   // Video ready
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !videoReady) return;
 
-    const handleReady = () => {
-      if (video.duration && Number.isFinite(video.duration)) {
-        setVideoReady(true);
-        setIsLoading(false);
-      }
-    };
+    video.pause();
+    video.currentTime = 0;
 
-    if (video.readyState >= 3) {
-      handleReady();
-    } else {
-      video.addEventListener('loadeddata', handleReady);
-      video.addEventListener('canplay', handleReady);
-      return () => {
-        video.removeEventListener('loadeddata', handleReady);
-        video.removeEventListener('canplay', handleReady);
-      };
-    }
-  }, [currentVideo]);
+    // trick: briefly play then pause to unlock frame updates
+    video
+      .play()
+      .then(() => {
+        video.pause();
+      })
+      .catch(() => {});
+  }, [videoReady]);
 
   // RAF smoothing loop
   useEffect(() => {
