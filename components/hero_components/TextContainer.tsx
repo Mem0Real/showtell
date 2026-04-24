@@ -24,7 +24,7 @@ export const TextContainer = ({ phase, showOverlayContent }: any) => {
     initial: { opacity: 0 },
     loading: { opacity: 1 },
     split: (isLeft: Boolean) => ({
-      x: isLeft ? '-17vw' : '15vw',
+      x: isLeft ? '-19vw' : '15vw',
       opacity: 1,
       transition: { duration: 1.3, ease: [0.43, 0.13, 0.23, 0.96] },
     }),
