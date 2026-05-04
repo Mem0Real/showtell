@@ -32,8 +32,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   const [currentHDRI, setCurrentHDRI] = useState(hotel.hdriSrc);
 
-  let directories;
-
   const hdriOptions = [
     { label: 'Exterior', src: hotel.hdriSrc },
     { label: 'Living Room', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_').toLowerCase()}/exterior.jpg` },
