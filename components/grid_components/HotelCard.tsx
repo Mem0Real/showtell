@@ -1,12 +1,15 @@
-// HotelCard.tsx
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTexture } from '@react-three/drei';
+
+import { HDRIViewer } from '@/components/grid_components/HDRIViewer';
 
 interface Hotel {
   name: string;
-  videoSrc: string;
+  hdriSrc: string;
+  previewSrc: string;
 }
 
 interface HotelCardProps {
@@ -14,172 +17,135 @@ interface HotelCardProps {
 }
 
 export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(hotel.videoSrc);
   const [showDropdown, setShowDropdown] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+
   const cardRef = useRef<HTMLDivElement>(null);
   const lastX = useRef(0);
-  const isDraggingRef = useRef(false); // Use ref for synchronous access
+  const lastY = useRef(0);
+  const isDraggingRef = useRef(false);
 
-  // Video options
-  const videoOptions = [
-    { label: 'Exterior', src: hotel.videoSrc },
-    { label: 'Living Room', src: '/videos/living.mp4' },
-    { label: 'Bedroom', src: '/videos/bedroom.mp4' },
+  const rotation = useRef({ x: 0, y: 0 });
+
+  const [currentHDRI, setCurrentHDRI] = useState(hotel.hdriSrc);
+
+  const hdriOptions = [
+    { label: 'Exterior', src: hotel.hdriSrc },
+    { label: 'Living Room', src: `/3d/hotels/${hotel.name}/exterior.jpg` },
+    { label: 'Bedroom', src: `/3d/hotels/${hotel.name}/exterior.jpg` },
   ];
 
-  // Sync isDragging state to ref for use in native event listeners
+  /* Preload Textures */
+  useEffect(() => {
+  useTexture.preload(hdriOptions.map(opt => opt.src));
+}, []);
+
+  /* Mouse Drag  */
+
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
-  // Handle native touch events with passive: false
+  const handleDrag = (dx: number, dy: number) => {
+    rotation.current.x += dx * 0.005;
+    rotation.current.y += dy * 0.005;
+
+    rotation.current.y = Math.max(
+      -Math.PI / 2,
+      Math.min(Math.PI / 2, rotation.current.y)
+    );
+  };
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    lastX.current = e.clientX;
+    lastY.current = e.clientY;
+  }, []);
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isDraggingRef.current) return;
+
+      const dx = e.clientX - lastX.current;
+      const dy = e.clientY - lastY.current;
+
+      lastX.current = e.clientX;
+      lastY.current = e.clientY;
+
+      handleDrag(dx, dy);
+    },
+    []
+  );
+
+  useEffect(() => {
+    const handleMouseUp = () => setIsDragging(false);
+
+    if (isDragging) {
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => window.removeEventListener('mouseup', handleMouseUp);
+    }
+  }, [isDragging]);
+
+  /* Touch */
+
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
 
-    const handleTouchStartNative = (e: TouchEvent) => {
-      if (!videoReady || !videoRef.current) return;
+    const start = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('.dropdown-menu')) return;
 
-      e.preventDefault();
       setIsDragging(true);
+      setIsHovered(true);
+
       lastX.current = e.touches[0].clientX;
+      lastY.current = e.touches[0].clientY;
     };
 
-    const handleTouchMoveNative = (e: TouchEvent) => {
-      if (!isDraggingRef.current || !videoReady || !videoRef.current) return;
+    const move = (e: TouchEvent) => {
+      if (!isDraggingRef.current) return;
 
-      e.preventDefault();
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
 
-      const currentX = e.touches[0].clientX;
-      const deltaX = currentX - lastX.current;
-      lastX.current = currentX;
+      const dx = x - lastX.current;
+      const dy = y - lastY.current;
 
-      if (Math.abs(deltaX) > 1 && videoRef.current) {
-        const video = videoRef.current;
-        const step = deltaX * 0.03;
-        let newTime = video.currentTime + step;
+      lastX.current = x;
+      lastY.current = y;
 
-        if (newTime < 0) newTime = video.duration + newTime;
-        if (newTime > video.duration) newTime = newTime - video.duration;
-
-        video.currentTime = newTime;
-      }
+      handleDrag(dx, dy);
     };
 
-    const handleTouchEndNative = () => {
-      setIsDragging(false);
-    };
+    const end = () => setIsDragging(false);
 
-    // Add native event listeners with passive: false
-    card.addEventListener('touchstart', handleTouchStartNative, { passive: false });
-    card.addEventListener('touchmove', handleTouchMoveNative, { passive: false });
-    card.addEventListener('touchend', handleTouchEndNative);
+    card.addEventListener('touchstart', start, { passive: true });
+    card.addEventListener('touchmove', move, { passive: true });
+    card.addEventListener('touchend', end);
 
     return () => {
-      card.removeEventListener('touchstart', handleTouchStartNative);
-      card.removeEventListener('touchmove', handleTouchMoveNative);
-      card.removeEventListener('touchend', handleTouchEndNative);
+      card.removeEventListener('touchstart', start);
+      card.removeEventListener('touchmove', move);
+      card.removeEventListener('touchend', end);
     };
-  }, [videoReady]);
-
-  // Video loading effect
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleLoadedData = () => {
-      if (video.duration && Number.isFinite(video.duration)) {
-        setVideoReady(true);
-        setIsLoading(false);
-      }
-    };
-
-    if (video.readyState >= 3) {
-      handleLoadedData();
-    } else {
-      video.addEventListener('loadeddata', handleLoadedData);
-      video.addEventListener('canplay', handleLoadedData);
-      return () => {
-        video.removeEventListener('loadeddata', handleLoadedData);
-        video.removeEventListener('canplay', handleLoadedData);
-      };
-    }
-  }, [currentVideo]);
-
-  // Preload video on mount
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.preload = 'auto';
-    video.load();
-
-    const timeout = setTimeout(() => {
-      if (!videoReady) {
-        video.load();
-      }
-    }, 5000);
-
-    return () => clearTimeout(timeout);
   }, []);
 
-  // Mouse handlers (unchanged)
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if (!videoReady || !videoRef.current) return;
-      e.preventDefault();
-      setIsDragging(true);
-      lastX.current = e.clientX;
-    },
-    [videoReady],
-  );
+  /* UI Actions  */
 
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener('mouseup', handleGlobalMouseUp);
-      return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
-    }
-  }, [isDragging]);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isDragging || !videoReady || !videoRef.current) return;
-
-      const deltaX = e.clientX - lastX.current;
-      lastX.current = e.clientX;
-
-      const video = videoRef.current;
-      const step = deltaX * 0.005;
-      let newTime = video.currentTime + step;
-
-      if (newTime < 0) newTime = video.duration + newTime;
-      if (newTime > video.duration) newTime = newTime - video.duration;
-
-      video.currentTime = newTime;
-    },
-    [isDragging, videoReady],
-  );
-
-  const handleVideoChange = (src: string) => {
-    setCurrentVideo(src);
-    setVideoReady(false);
-    setIsLoading(true);
+  const handleHDRIChange = (src: string) => {
+    setCurrentHDRI(src);
     setShowDropdown(false);
   };
+
+  const isActive = isHovered && isDragging;
 
   return (
     <motion.div
       ref={cardRef}
-      className='relative w-full h-125 rounded-2xl overflow-hidden group touch-none'
+      className="relative w-full h-125 rounded-2xl overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -188,99 +154,69 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      whileHover={{ scale: 1.02 }}
       style={{
-        cursor: !videoReady ? 'wait' : isDragging ? 'grabbing' : isHovered ? 'grab' : 'default',
-        touchAction: 'none', // Prevent browser touch gestures
+        cursor: isDragging ? 'grabbing' : isHovered ? 'grab' : 'default',
+        touchAction: 'none',
       }}
     >
-      {/* Video */}
-      <video
-        ref={videoRef}
-        src={currentVideo}
-        muted
-        preload='auto'
-        className='absolute inset-0 w-full h-full object-cover pointer-events-none'
-        loop
-        playsInline
-      />
+      <div className="absolute inset-0">
+        {/* Image fallback */}
+        <motion.img
+          src={hotel.previewSrc}
+          className="absolute inset-0 w-full h-full object-cover"
+          animate={{ opacity: isActive ? 0 : 1 }}
+          transition={{ duration: 0.4 }}
+        />
 
-      {/* Loading State */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className='absolute inset-0 bg-gray-200 flex items-center justify-center'
-          >
-            <div className='flex flex-col items-center gap-3'>
-              <div className='w-8 h-8 border-2 border-gray-400 border-t-gray-800 rounded-full animate-spin' />
-              <span className='text-sm text-gray-600'>Loading preview...</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Canvas */}
+        <motion.div
+          className="absolute inset-0"
+          animate={{ opacity: isActive ? 1 : 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          {isActive && (
+            <HDRIViewer src={currentHDRI} rotation={rotation} />
+          )}
+        </motion.div>
+      </div>
 
-      {/* Overlay gradient */}
-      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none' />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
       {/* Dropdown */}
       <AnimatePresence>
-        {isHovered && videoReady && (
+        {isHovered && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className='absolute top-4 left-4 z-10'
+            className="absolute top-4 left-4 z-10 dropdown-menu"
           >
-            <div className='relative'>
+            <div className="relative">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
-                className='bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/70 transition cursor-pointer'
+                className="bg-black/50 text-white px-4 py-2 rounded-lg dropdown-menu"
               >
-                <span>{videoOptions.find((opt) => opt.src === currentVideo)?.label || 'Exterior'}</span>
-                <motion.svg
-                  width='12'
-                  height='12'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  animate={{ rotate: showDropdown ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <path d='M6 9l6 6 6-6' />
-                </motion.svg>
+                {
+                  hdriOptions.find((opt) => opt.src === currentHDRI)
+                    ?.label
+                }
               </button>
 
               <AnimatePresence>
                 {showDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className='absolute top-full mt-2 left-0 bg-black/70 backdrop-blur-md rounded-lg overflow-hidden min-w-40'
-                  >
-                    {videoOptions.map((option) => (
+                  <motion.div className="absolute top-full mt-2 bg-black/70 rounded-lg dropdown-menu">
+                    {hdriOptions.map((option) => (
                       <button
                         key={option.src}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleVideoChange(option.src);
+                          handleHDRIChange(option.src);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition cursor-pointer ${
-                          currentVideo === option.src
-                            ? 'text-white bg-white/20'
-                            : 'text-white/70 hover:text-white hover:bg-white/10'
-                        }`}
+                        className="block w-full text-left px-4 py-2 text-white"
                       >
                         {option.label}
                       </button>
@@ -293,18 +229,21 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         )}
       </AnimatePresence>
 
-      {/* Hotel name */}
+      {/* Title */}
       <motion.div
-        className='absolute bottom-0 left-0 right-0 p-6 pointer-events-none'
+        className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none"
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isHovered ? 100 : 0,
           opacity: isHovered ? 0 : 1,
         }}
-        transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
       >
-        <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
-        <p className='text-white/60 text-sm'>{videoReady ? 'Drag to explore • Click to switch views' : 'Loading...'}</p>
+        <h3 className="text-white text-3xl font-bold mb-1">
+          {hotel.name}
+        </h3>
+        <p className="text-white/60 text-sm">
+          Drag to explore
+        </p>
       </motion.div>
     </motion.div>
   );

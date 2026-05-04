@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/grid_components/HotelCard copy.tsx.lw"  ],
   "exclude": ["node_modules"]
 }
