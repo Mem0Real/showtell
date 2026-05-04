@@ -10,6 +10,7 @@ import { BentoGrid } from '@/components/bento_components/BentoGrid';
 import { AnotherClipMask } from '@/components/AnotherClipMask';
 import { Contact } from '@/components/contact_components/Contact';
 import { Footer } from '@/components/Footer';
+import { R3fCanvasHost } from '@/components/R3fCanvasHost';
 
 /* TODO 
   - contact interactive elements not working
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <main className='w-full h-full bg-light'>
+      <R3fCanvasHost />
       <Hero />
       <HotelGrid />
       <ClipMask />

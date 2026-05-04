@@ -133,12 +133,12 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
             transition={{ duration: 0.3 }}
             onClick={(e) => e.stopPropagation()}
             className={`
-              bg-[#f1f5f9] shadow-2xl flex flex-col
+              bg-light shadow-2xl flex flex-col
               ${isFullscreen ? 'fixed inset-0' : 'relative w-[90vw] h-[80vh] max-w-6xl rounded-2xl overflow-hidden'}
             `}
           >
             {/* Header */}
-            <div className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-white/90 to-transparent'>
+            <div className='absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-linear-to-b from-white/90 to-transparent'>
               <div>
                 <h2 className='text-gray-900 text-xl font-bold'>{title}</h2>
                 <p className='text-gray-500 text-sm'>Drag to rotate • Scroll to zoom</p>
@@ -190,7 +190,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className='absolute inset-0 z-20 bg-[#f1f5f9] flex items-center justify-center'
+                  className='absolute inset-0 z-20 bg-light flex items-center justify-center'
                 >
                   <div className='flex flex-col items-center gap-4'>
                     <div className='w-12 h-12 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin' />
@@ -201,7 +201,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
             </AnimatePresence>
 
             {/* 3D Scene Content */}
-            <div className='flex-1 bg-[#f1f5f9]' onLoad={() => setIsLoading(false)}>
+            <div className='flex-1 bg-light' onLoad={() => setIsLoading(false)}>
               {children}
             </div>
           </motion.div>

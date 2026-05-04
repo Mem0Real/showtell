@@ -4,7 +4,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTexture } from '@react-three/drei';
 
-import { HDRIViewer } from '@/components/grid_components/HDRIViewer';
+import { HDRIScene } from '@/components/grid_components/HDRIScene';
+import { r3fTunnel } from '@/lib/r3fTunnel';
 
 interface Hotel {
   name: string;
@@ -20,6 +21,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const lastX = useRef(0);
@@ -38,11 +40,16 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   /* Preload Textures */
   useEffect(() => {
-  useTexture.preload(hdriOptions.map(opt => opt.src));
-}, []);
+    useTexture.preload(hdriOptions.map((opt) => opt.src));
+  }, []);
+
+  /* Size of Canvas */
+  useEffect(() => {
+    if (!cardRef.current) return;
+    setRect(cardRef.current.getBoundingClientRect());
+  }, [isDragging]);
 
   /* Mouse Drag  */
-
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
@@ -51,33 +58,56 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     rotation.current.x += dx * 0.005;
     rotation.current.y += dy * 0.005;
 
-    rotation.current.y = Math.max(
-      -Math.PI / 2,
-      Math.min(Math.PI / 2, rotation.current.y)
-    );
+    rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
+    (cardRef.current as any)?.requestPointerLock?.();
+
     lastX.current = e.clientX;
     lastY.current = e.clientY;
-  }, []);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isDraggingRef.current) return;
+    // const handleMove = (e: MouseEvent) => {
+    //   const dx = e.clientX - lastX.current;
+    //   const dy = e.clientY - lastY.current;
 
-      const dx = e.clientX - lastX.current;
-      const dy = e.clientY - lastY.current;
+    //   lastX.current = e.clientX;
+    //   lastY.current = e.clientY;
 
-      lastX.current = e.clientX;
-      lastY.current = e.clientY;
+    //   handleDrag(dx, dy);
+    // };
+
+    const handleMove = (e: MouseEvent) => {
+      const dx = e.movementX;
+      const dy = e.movementY;
 
       handleDrag(dx, dy);
-    },
-    []
-  );
+    };
+    const handleUp = () => {
+      setIsDragging(false);
+      document.exitPointerLock?.();
+
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+
+    const dx = e.clientX - lastX.current;
+    const dy = e.clientY - lastY.current;
+
+    lastX.current = e.clientX;
+    lastY.current = e.clientY;
+
+    handleDrag(dx, dy);
+  }, []);
 
   useEffect(() => {
     const handleMouseUp = () => setIsDragging(false);
@@ -145,43 +175,42 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   return (
     <motion.div
       ref={cardRef}
-      className="relative w-full h-125 rounded-2xl overflow-hidden group"
+      className='relative w-full h-125 rounded-2xl overflow-hidden group'
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
-        setIsHovered(false);
-        setIsDragging(false);
-        setShowDropdown(false);
+        if (!isDraggingRef.current) {
+          setIsHovered(false);
+          setShowDropdown(false);
+        }
       }}
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
+      // onMouseMove={handleMouseMove}
       style={{
-        cursor: isDragging ? 'grabbing' : isHovered ? 'grab' : 'default',
+        cursor: isDragging ? 'none' : isHovered ? 'grab' : 'default',
         touchAction: 'none',
       }}
     >
-      <div className="absolute inset-0">
-        {/* Image fallback */}
+      <div className='absolute inset-0'>
+        {/* Preview */}
         <motion.img
           src={hotel.previewSrc}
-          className="absolute inset-0 w-full h-full object-cover"
+          className='absolute inset-0 w-full h-full object-cover'
           animate={{ opacity: isActive ? 0 : 1 }}
           transition={{ duration: 0.4 }}
         />
 
-        {/* Canvas */}
-        <motion.div
-          className="absolute inset-0"
-          animate={{ opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-        >
+        {/* Tunnel to Canvas */}
+        <motion.div className='absolute inset-0' animate={{ opacity: isActive ? 1 : 0 }} transition={{ duration: 0.4 }}>
           {isActive && (
-            <HDRIViewer src={currentHDRI} rotation={rotation} />
+            <r3fTunnel.In>
+              <HDRIScene src={currentHDRI} rotation={rotation} rect={rect} />
+            </r3fTunnel.In>
           )}
         </motion.div>
       </div>
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+      {/* <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent pointer-events-none' /> */}
 
       {/* Dropdown */}
       <AnimatePresence>
@@ -190,25 +219,22 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-4 left-4 z-10 dropdown-menu"
+            className='absolute top-4 left-4 z-10 dropdown-menu'
           >
-            <div className="relative">
+            <div className='relative'>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
-                className="bg-black/50 text-white px-4 py-2 rounded-lg dropdown-menu"
+                className='bg-black/50 text-white px-4 py-2 rounded-lg dropdown-menu'
               >
-                {
-                  hdriOptions.find((opt) => opt.src === currentHDRI)
-                    ?.label
-                }
+                {hdriOptions.find((opt) => opt.src === currentHDRI)?.label}
               </button>
 
               <AnimatePresence>
                 {showDropdown && (
-                  <motion.div className="absolute top-full mt-2 bg-black/70 rounded-lg dropdown-menu">
+                  <motion.div className='absolute top-full mt-2 bg-black/70 rounded-lg dropdown-menu'>
                     {hdriOptions.map((option) => (
                       <button
                         key={option.src}
@@ -216,7 +242,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
                           e.stopPropagation();
                           handleHDRIChange(option.src);
                         }}
-                        className="block w-full text-left px-4 py-2 text-white"
+                        className='block w-full text-left px-4 py-2 text-white'
                       >
                         {option.label}
                       </button>
@@ -231,19 +257,15 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
       {/* Title */}
       <motion.div
-        className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none"
+        className='absolute bottom-0 left-0 right-0 p-6 pointer-events-none'
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isHovered ? 100 : 0,
           opacity: isHovered ? 0 : 1,
         }}
       >
-        <h3 className="text-white text-3xl font-bold mb-1">
-          {hotel.name}
-        </h3>
-        <p className="text-white/60 text-sm">
-          Drag to explore
-        </p>
+        <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
+        <p className='text-white/60 text-sm'>Drag to explore</p>
       </motion.div>
     </motion.div>
   );
