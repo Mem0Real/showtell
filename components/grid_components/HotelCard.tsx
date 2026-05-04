@@ -34,8 +34,8 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
   const hdriOptions = [
     { label: 'Exterior', src: hotel.hdriSrc },
-    { label: 'Living Room', src: `/3d/hotels/${hotel.name}/exterior.jpg` },
-    { label: 'Bedroom', src: `/3d/hotels/${hotel.name}/exterior.jpg` },
+    { label: 'Living Room', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_')}/exterior.jpg` },
+    { label: 'Bedroom', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_')}/exterior.jpg` },
   ];
 
   /* Preload Textures */
