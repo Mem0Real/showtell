@@ -11,22 +11,22 @@ export const HotelGrid = () => {
   const hotels = [
     {
       name: 'Hilton Hotel',
-      hdriSrc: `${dir}/hilton_hotel/exterior.jpg`,
+      hdriSrc: `${dir}/hilton_hotel/ht2.jpg`,
       previewSrc: `${dir}/hilton_hotel/preview.png`,
     },
     {
       name: 'Radison Blu Hotel',
-      hdriSrc: `${dir}/radison_blu_hotel/exterior.jpg`,
+      hdriSrc: `${dir}/radison_blu_hotel/ht2.jpg`,
       previewSrc: `${dir}/radison_blu_hotel/preview.png`,
     },
     {
       name: 'Getfam Hotel',
-      hdriSrc: `${dir}/getfam_hotel/exterior.jpg`,
+      hdriSrc: `${dir}/getfam_hotel/ht2.jpg`,
       previewSrc: `${dir}/getfam_hotel/preview.png`,
     },
     {
       name: 'Sarem International Hotel',
-      hdriSrc: `${dir}/sarem_international_hotel/exterior.jpg`,
+      hdriSrc: `${dir}/sarem_international_hotel/ht2.jpg`,
       previewSrc: `${dir}/sarem_international_hotel/preview.png`,
     },
   ];
