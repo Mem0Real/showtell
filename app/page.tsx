@@ -26,9 +26,9 @@ export default function Home() {
     <main className='w-full h-full bg-light'>
       <R3fCanvasHost />
       <Hero />
-      <HotelGrid />
-      <ClipMask />
       <BentoGrid />
+      <ClipMask />
+      <HotelGrid />
       <AnotherClipMask />
       <Contact />
       <Footer />

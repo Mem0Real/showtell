@@ -145,7 +145,9 @@ export const BentoGrid = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-4 ${playfair.className}`}>Explore More Properties</h2>
+            <h2 className={`text-5xl md:text-6xl font-bold text-gray-900 mb-4 ${playfair.className}`}>
+              Explore Our Properties
+            </h2>
             <p className='text-gray-600 text-lg max-w-2xl'>
               Discover our curated collection of unique stays. Click to view in immersive 3D.
             </p>
