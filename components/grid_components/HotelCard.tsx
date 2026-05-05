@@ -21,6 +21,8 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isHDRILoaded, setIsHDRILoaded] = useState(false);
+
   const [rect, setRect] = useState<DOMRect | null>(null);
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -38,16 +40,28 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     { label: 'Bedroom', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_').toLowerCase()}/exterior.jpg` },
   ];
 
+  /* Size of Canvas */
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const updateRect = () => {
+      setRect(cardRef.current!.getBoundingClientRect());
+    };
+
+    updateRect();
+    window.addEventListener('scroll', updateRect);
+    window.addEventListener('resize', updateRect);
+
+    return () => {
+      window.removeEventListener('scroll', updateRect);
+      window.removeEventListener('resize', updateRect);
+    };
+  }, []);
+
   /* Preload Textures */
   useEffect(() => {
     useTexture.preload(hdriOptions.map((opt) => opt.src));
   }, []);
-
-  /* Size of Canvas */
-  useEffect(() => {
-    if (!cardRef.current) return;
-    setRect(cardRef.current.getBoundingClientRect());
-  }, [isDragging]);
 
   /* Mouse Drag  */
   useEffect(() => {
@@ -69,16 +83,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     lastX.current = e.clientX;
     lastY.current = e.clientY;
 
-    // const handleMove = (e: MouseEvent) => {
-    //   const dx = e.clientX - lastX.current;
-    //   const dy = e.clientY - lastY.current;
-
-    //   lastX.current = e.clientX;
-    //   lastY.current = e.clientY;
-
-    //   handleDrag(dx, dy);
-    // };
-
     const handleMove = (e: MouseEvent) => {
       const dx = e.movementX;
       const dy = e.movementY;
@@ -95,18 +99,6 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleUp);
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDraggingRef.current) return;
-
-    const dx = e.clientX - lastX.current;
-    const dy = e.clientY - lastY.current;
-
-    lastX.current = e.clientX;
-    lastY.current = e.clientY;
-
-    handleDrag(dx, dy);
   }, []);
 
   useEffect(() => {
@@ -168,6 +160,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   const handleHDRIChange = (src: string) => {
     setCurrentHDRI(src);
     setShowDropdown(false);
+    setIsHDRILoaded(false);
   };
 
   const isActive = isHovered && isDragging;
@@ -195,15 +188,35 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
         <motion.img
           src={hotel.previewSrc}
           className='absolute inset-0 w-full h-full object-cover'
-          animate={{ opacity: isActive ? 0 : 1 }}
-          transition={{ duration: 0.4 }}
+          animate={{ opacity: isActive ? 0.7 : 1 }}
+          transition={{ duration: 0.3 }}
         />
+
+        {/* Spinner */}
+        <AnimatePresence>
+          {isActive && !isHDRILoaded && (
+            <motion.div
+              className='absolute inset-0 flex items-center justify-center'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className='w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin' />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tunnel to Canvas */}
         <motion.div className='absolute inset-0' animate={{ opacity: isActive ? 1 : 0 }} transition={{ duration: 0.4 }}>
           {isActive && (
             <r3fTunnel.In>
-              <HDRIScene src={currentHDRI} rotation={rotation} rect={rect} />
+               <HDRIScene
+    src={currentHDRI}
+    rotation={rotation}
+    rect={rect}
+    active={isActive}
+    onReady={() => setIsHDRILoaded(true)}
+  />
             </r3fTunnel.In>
           )}
         </motion.div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 
@@ -10,26 +10,49 @@ export const HDRIScene = ({
   src,
   rotation,
   rect,
+  active,
+  onReady,
 }: {
   src: string;
   rotation: React.RefObject<{ x: number; y: number }>;
-  rect: DOMRect | null
+  rect: DOMRect | null;
+  active: boolean;
+  onReady: any;
 }) => {
-  const { size } = useThree();
+  const { gl, size } = useThree();
+
+  const [ready, setReady] = useState(false);
+
   const texture = useTexture(src);
   const meshRef = useRef<THREE.Mesh>(null);
 
-useFrame(() => {
-  if (!meshRef.current || !rect) return;
+  useEffect(() => {
+    if (texture) setReady(true);
+  }, []);
 
-  const x = (rect.left / window.innerWidth) * 2 - 1;
-  const y = -(rect.top / window.innerHeight) * 2 + 1;
+  useEffect(() => {
+    if (texture && ready) onReady();
+  }, [texture]);
 
-  meshRef.current.position.set(x * 2.5, y * 1.5, 0);
+  useFrame(() => {
+    if (!rect || !active) return;
 
-  meshRef.current.rotation.y = rotation.current.x;
-  meshRef.current.rotation.x = rotation.current.y;
-});
+    const { left, top, width, height } = rect;
+
+    const y = size.height - top - height;
+
+    gl.setScissor(left, y, width, height);
+    gl.setViewport(left, y, width, height);
+
+    gl.setScissorTest(true);
+
+    if (meshRef.current) {
+      meshRef.current.rotation.y = rotation.current.x;
+      meshRef.current.rotation.x = rotation.current.y;
+    }
+
+    gl.setScissorTest(false);
+  });
 
   return (
     <mesh ref={meshRef}>
