@@ -47,7 +47,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
         exit={{ opacity: 0 }}
       >
         {/* Backdrop */}
-        <div className='absolute inset-0 bg-black/90 z-50' onClick={onClose} />
+        <div className='absolute inset-0 bg-black/10 -z-50' onClick={onClose} />
 
         {/* Modal */}
         <motion.div
@@ -78,7 +78,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
           {/* Close Button (FIXED Z-INDEX) */}
           <button
             onClick={onClose}
-            className='absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full hover:cursor-pointer hover:scale-110 hover:bg-black/40 transition-all duration-100'
+            className='z-50 absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full hover:cursor-pointer hover:scale-110 hover:bg-black/40 transition-all duration-100'
           >
             <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' strokeWidth='2'>
               <line x1='18' y1='6' x2='6' y2='18' />
