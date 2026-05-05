@@ -14,7 +14,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
   const lastY = useRef(0);
 
   useEffect(() => {
-    const move = (e: MouseEvent) => {
+    const move = (e: PointerEvent) => {
       if (!dragging) return;
 
       const dx = e.clientX - lastX.current;
@@ -29,12 +29,12 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
 
     const up = () => setDragging(false);
 
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', up);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
 
     return () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseup', up);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
     };
   }, [dragging]);
 
@@ -58,6 +58,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
           transition={{ duration: 0.25 }}
           style={{
             cursor: dragging ? 'none' : 'grab', // move cursor control HERE
+            touchAction: 'none',
           }}
         >
           {/* Preview */}
@@ -100,9 +101,10 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
           {/* Drag Layer (TOP BUT BELOW CLOSE) */}
           <div
             className='absolute inset-0 z-30'
-            onMouseDown={(e) => {
+            onPointerDown={(e) => {
               e.stopPropagation();
               setDragging(true);
+
               lastX.current = e.clientX;
               lastY.current = e.clientY;
             }}
