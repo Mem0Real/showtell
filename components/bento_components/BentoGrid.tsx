@@ -149,7 +149,7 @@ export const BentoGrid = () => {
               Explore Our Properties
             </h2>
             <p className='text-gray-600 text-lg max-w-2xl'>
-              Discover our curated collection of unique stays. Click to view in immersive 3D.
+              Discover our curated collection of unique stays. Click to view in immersive 3D scene.
             </p>
           </motion.div>
 
