@@ -28,12 +28,30 @@ export const HDRIScene = ({
     }
   }, [texture]);
 
+  const getViewportScale = () => {
+    const w = size.width;
+
+    if (w < 640) {
+      // mobile
+      return { w: 0.9, h: 0.8 };
+    }
+
+    if (w < 1024) {
+      // tablet / small laptop
+      return { w: 0.9, h: 0.9 };
+    }
+
+    // desktop
+    return { w: 0.7, h: 0.7 };
+  };
+
   useFrame(() => {
     if (!active) return;
 
-    // Center modal viewport (60% of screen)
-    const width = size.width * 0.7;
-    const height = size.height * 0.7;
+    const scale = getViewportScale();
+
+    const width = size.width * scale.w;
+    const height = size.height * scale.h;
 
     const left = (size.width - width) / 2;
     const bottom = (size.height - height) / 2;

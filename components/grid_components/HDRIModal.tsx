@@ -51,7 +51,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
 
         {/* Modal */}
         <motion.div
-          className='relative w-[70vw] h-[70vh] rounded-xl overflow-hidden z-60'
+          className='relative w-[90vw] h-[80vh] lg:w-[70vw] lg:h-[70vh] rounded-xl overflow-hidden z-60'
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.96, opacity: 0 }}
