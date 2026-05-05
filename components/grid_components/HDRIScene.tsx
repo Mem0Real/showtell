@@ -1,49 +1,45 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { useTexture } from '@react-three/drei';
+import { useRef, useEffect } from 'react';
 
 import * as THREE from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
 
 export const HDRIScene = ({
   src,
   rotation,
-  rect,
   active,
   onReady,
 }: {
   src: string;
   rotation: React.RefObject<{ x: number; y: number }>;
-  rect: DOMRect | null;
   active: boolean;
-  onReady: any;
+  onReady?: () => void;
 }) => {
-  const { gl, size } = useThree();
-
-  const [ready, setReady] = useState(false);
-
   const texture = useTexture(src);
   const meshRef = useRef<THREE.Mesh>(null);
+  const { gl, size } = useThree();
 
   useEffect(() => {
-    if (texture) setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (texture && ready) onReady();
+    if (texture && onReady) {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      onReady();
+    }
   }, [texture]);
 
   useFrame(() => {
-    if (!rect || !active) return;
+    if (!active) return;
 
-    const { left, top, width, height } = rect;
+    // Center modal viewport (60% of screen)
+    const width = size.width * 0.7;
+    const height = size.height * 0.7;
 
-    const y = size.height - top - height;
+    const left = (size.width - width) / 2;
+    const bottom = (size.height - height) / 2;
 
-    gl.setScissor(left, y, width, height);
-    gl.setViewport(left, y, width, height);
-
+    gl.setViewport(left, bottom, width, height);
+    gl.setScissor(left, bottom, width, height);
     gl.setScissorTest(true);
 
     if (meshRef.current) {

@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { Canvas } from "@react-three/fiber"
-import { r3fTunnel } from "@/lib/r3fTunnel"
+import { Canvas } from '@react-three/fiber';
+import { r3fTunnel } from '@/lib/r3fTunnel';
 
 export const R3fCanvasHost = () => {
   return (
     <Canvas
-    camera={{ position: [0, 0, 0.1] }}
+      camera={{ position: [0, 0, 0.1] }}
       gl={{ antialias: true }}
       dpr={[1, 1.5]}
       style={{
         position: 'fixed',
         inset: 0,
         pointerEvents: 'none',
-        zIndex: 50,
+        zIndex: 20,
       }}
-      >
-        <r3fTunnel.Out />
-      </Canvas>
-  )
-}
+    >
+      <r3fTunnel.Out />
+    </Canvas>
+  );
+};

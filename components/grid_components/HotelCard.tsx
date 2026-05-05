@@ -1,11 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTexture } from '@react-three/drei';
-
-import { HDRIScene } from '@/components/grid_components/HDRIScene';
-import { r3fTunnel } from '@/lib/r3fTunnel';
+import { motion } from 'framer-motion';
 
 interface Hotel {
   name: string;
@@ -13,273 +8,31 @@ interface Hotel {
   previewSrc: string;
 }
 
-interface HotelCardProps {
+export const HotelCard = ({
+  hotel,
+  onOpen,
+}: {
   hotel: Hotel;
-}
-
-export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [isHDRILoaded, setIsHDRILoaded] = useState(false);
-
-  const [rect, setRect] = useState<DOMRect | null>(null);
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const lastX = useRef(0);
-  const lastY = useRef(0);
-  const isDraggingRef = useRef(false);
-
-  const rotation = useRef({ x: 0, y: 0 });
-
-  const [currentHDRI, setCurrentHDRI] = useState(hotel.hdriSrc);
-
-  const hdriOptions = [
-    { label: 'Exterior', src: hotel.hdriSrc },
-    { label: 'Living Room', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_').toLowerCase()}/exterior.jpg` },
-    { label: 'Bedroom', src: `/3d/hotels/${hotel.name.replaceAll(' ', '_').toLowerCase()}/exterior.jpg` },
-  ];
-
-  /* Size of Canvas */
-  useEffect(() => {
-    if (!cardRef.current) return;
-
-    const updateRect = () => {
-      setRect(cardRef.current!.getBoundingClientRect());
-    };
-
-    updateRect();
-    window.addEventListener('scroll', updateRect);
-    window.addEventListener('resize', updateRect);
-
-    return () => {
-      window.removeEventListener('scroll', updateRect);
-      window.removeEventListener('resize', updateRect);
-    };
-  }, []);
-
-  /* Preload Textures */
-  useEffect(() => {
-    useTexture.preload(hdriOptions.map((opt) => opt.src));
-  }, []);
-
-  /* Mouse Drag  */
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
-
-  const handleDrag = (dx: number, dy: number) => {
-    rotation.current.x += dx * 0.005;
-    rotation.current.y += dy * 0.005;
-
-    rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
-  };
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    (cardRef.current as any)?.requestPointerLock?.();
-
-    lastX.current = e.clientX;
-    lastY.current = e.clientY;
-
-    const handleMove = (e: MouseEvent) => {
-      const dx = e.movementX;
-      const dy = e.movementY;
-
-      handleDrag(dx, dy);
-    };
-    const handleUp = () => {
-      setIsDragging(false);
-      document.exitPointerLock?.();
-
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleUp);
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleUp);
-  }, []);
-
-  useEffect(() => {
-    const handleMouseUp = () => setIsDragging(false);
-
-    if (isDragging) {
-      window.addEventListener('mouseup', handleMouseUp);
-      return () => window.removeEventListener('mouseup', handleMouseUp);
-    }
-  }, [isDragging]);
-
-  /* Touch */
-
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const start = (e: TouchEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest('.dropdown-menu')) return;
-
-      setIsDragging(true);
-      setIsHovered(true);
-
-      lastX.current = e.touches[0].clientX;
-      lastY.current = e.touches[0].clientY;
-    };
-
-    const move = (e: TouchEvent) => {
-      if (!isDraggingRef.current) return;
-
-      const x = e.touches[0].clientX;
-      const y = e.touches[0].clientY;
-
-      const dx = x - lastX.current;
-      const dy = y - lastY.current;
-
-      lastX.current = x;
-      lastY.current = y;
-
-      handleDrag(dx, dy);
-    };
-
-    const end = () => setIsDragging(false);
-
-    card.addEventListener('touchstart', start, { passive: true });
-    card.addEventListener('touchmove', move, { passive: true });
-    card.addEventListener('touchend', end);
-
-    return () => {
-      card.removeEventListener('touchstart', start);
-      card.removeEventListener('touchmove', move);
-      card.removeEventListener('touchend', end);
-    };
-  }, []);
-
-  /* UI Actions  */
-
-  const handleHDRIChange = (src: string) => {
-    setCurrentHDRI(src);
-    setShowDropdown(false);
-    setIsHDRILoaded(false);
-  };
-
-  const isActive = isHovered && isDragging;
-
+  onOpen: (hotel: Hotel) => void;
+}) => {
   return (
     <motion.div
-      ref={cardRef}
-      className='relative w-full h-125 rounded-2xl overflow-hidden group'
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        if (!isDraggingRef.current) {
-          setIsHovered(false);
-          setShowDropdown(false);
-        }
-      }}
-      onMouseDown={handleMouseDown}
-      // onMouseMove={handleMouseMove}
-      style={{
-        cursor: isDragging ? 'none' : isHovered ? 'grab' : 'default',
-        touchAction: 'none',
-      }}
+      className="relative w-full h-125 rounded-2xl overflow-hidden cursor-pointer"
+      whileHover={{ scale: 1.02 }}
+      onClick={() => onOpen(hotel)}
     >
-      <div className='absolute inset-0'>
-        {/* Preview */}
-        <motion.img
-          src={hotel.previewSrc}
-          className='absolute inset-0 w-full h-full object-cover'
-          animate={{ opacity: isActive ? 0.7 : 1 }}
-          transition={{ duration: 0.3 }}
-        />
+      <img
+        src={hotel.previewSrc}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
 
-        {/* Spinner */}
-        <AnimatePresence>
-          {isActive && !isHDRILoaded && (
-            <motion.div
-              className='absolute inset-0 flex items-center justify-center'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className='w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin' />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
 
-        {/* Tunnel to Canvas */}
-        <motion.div className='absolute inset-0' animate={{ opacity: isActive ? 1 : 0 }} transition={{ duration: 0.4 }}>
-          {isActive && (
-            <r3fTunnel.In>
-               <HDRIScene
-    src={currentHDRI}
-    rotation={rotation}
-    rect={rect}
-    active={isActive}
-    onReady={() => setIsHDRILoaded(true)}
-  />
-            </r3fTunnel.In>
-          )}
-        </motion.div>
+
+      <div className="absolute bottom-0 p-6 text-white">
+        <h3 className="text-2xl font-bold">{hotel.name}</h3>
+        <p className="text-sm opacity-70">Click to explore</p>
       </div>
-
-      {/* Overlay */}
-      {/* <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent pointer-events-none' /> */}
-
-      {/* Dropdown */}
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className='absolute top-4 left-4 z-10 dropdown-menu'
-          >
-            <div className='relative'>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDropdown(!showDropdown);
-                }}
-                className='bg-black/50 text-white px-4 py-2 rounded-lg dropdown-menu'
-              >
-                {hdriOptions.find((opt) => opt.src === currentHDRI)?.label}
-              </button>
-
-              <AnimatePresence>
-                {showDropdown && (
-                  <motion.div className='absolute top-full mt-2 bg-black/70 rounded-lg dropdown-menu'>
-                    {hdriOptions.map((option) => (
-                      <button
-                        key={option.src}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleHDRIChange(option.src);
-                        }}
-                        className='block w-full text-left px-4 py-2 text-white'
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Title */}
-      <motion.div
-        className='absolute bottom-0 left-0 right-0 p-6 pointer-events-none'
-        initial={{ y: 0, opacity: 1 }}
-        animate={{
-          y: isHovered ? 100 : 0,
-          opacity: isHovered ? 0 : 1,
-        }}
-      >
-        <h3 className='text-white text-3xl font-bold mb-1'>{hotel.name}</h3>
-        <p className='text-white/60 text-sm'>Drag to explore</p>
-      </motion.div>
     </motion.div>
   );
 };

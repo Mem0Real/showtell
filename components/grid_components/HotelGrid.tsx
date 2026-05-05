@@ -3,9 +3,13 @@
 import { motion } from 'framer-motion';
 import { HotelCard } from '@/components/grid_components/HotelCard';
 import { playfair } from '@/lib/fonts';
+import { useState } from 'react';
+import { HDRIModal } from '@/components/grid_components/HDRIModal';
 
 // Grid Component
 export const HotelGrid = () => {
+  const [activeHotel, setActiveHotel] = useState<any>(null);
+
   const dir = '/3d/hotels/';
 
   const hotels = [
@@ -55,9 +59,11 @@ export const HotelGrid = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
             >
-              <HotelCard hotel={hotel} />
+              <HotelCard hotel={hotel} onOpen={setActiveHotel} />
             </motion.div>
           ))}
+
+          {activeHotel && <HDRIModal hotel={activeHotel} onClose={() => setActiveHotel(null)} />}
         </div>
       </div>
     </section>
