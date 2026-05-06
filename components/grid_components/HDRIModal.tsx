@@ -10,24 +10,29 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
   const [dragging, setDragging] = useState(false);
 
   const rotation = useRef({ x: 0, y: 0 });
-  const lastX = useRef(0);
-  const lastY = useRef(0);
 
+  // Dragging logic
   useEffect(() => {
     const move = (e: PointerEvent) => {
       if (!dragging) return;
 
-      const dx = e.clientX - lastX.current;
-      const dy = e.clientY - lastY.current;
-
-      lastX.current = e.clientX;
-      lastY.current = e.clientY;
+      const dx = e.movementX;
+      const dy = e.movementY;
 
       rotation.current.x += dx * 0.005;
       rotation.current.y += dy * 0.005;
+
+      // rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
     };
 
-    const up = () => setDragging(false);
+    const up = () => {
+      setDragging(false);
+
+      // exit pointer lock on release
+      if (document.pointerLockElement) {
+        document.exitPointerLock();
+      }
+    };
 
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
@@ -37,6 +42,28 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
       window.removeEventListener('pointerup', up);
     };
   }, [dragging]);
+
+  // Close on esc
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+
+        // also exit pointer lock if active
+        if (document.pointerLockElement) {
+          document.exitPointerLock();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [onClose]);
+
+  const dir = hotel.name.replaceAll(' ', '_').toLowerCase();
 
   return (
     <AnimatePresence>
@@ -63,7 +90,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
         >
           {/* Preview */}
           <motion.img
-            src={hotel.previewSrc}
+            src={`/3d/hotels/${dir}/preview.png`}
             className='absolute inset-0 w-full h-full object-cover z-10'
             animate={{ opacity: loaded ? 0 : 1 }}
             transition={{ duration: 0.5 }}
@@ -94,19 +121,23 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
             transition={{ duration: 0.5 }}
           >
             <r3fTunnel.In>
-              <HDRIScene src={hotel.hdriSrc} rotation={rotation} active={true} onReady={() => setLoaded(true)} />
+              <HDRIScene
+                src={`/3d/hotels/${dir}/hotel_room.jpg`}
+                rotation={rotation}
+                active={true}
+                onReady={() => setLoaded(true)}
+              />
             </r3fTunnel.In>
           </motion.div>
 
-          {/* Drag Layer (TOP BUT BELOW CLOSE) */}
           <div
             className='absolute inset-0 z-30'
             onPointerDown={(e) => {
               e.stopPropagation();
+
               setDragging(true);
 
-              lastX.current = e.clientX;
-              lastY.current = e.clientY;
+              (e.currentTarget as HTMLElement).requestPointerLock();
             }}
           />
         </motion.div>

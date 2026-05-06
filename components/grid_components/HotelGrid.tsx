@@ -10,29 +10,13 @@ import { HDRIModal } from '@/components/grid_components/HDRIModal';
 export const HotelGrid = () => {
   const [activeHotel, setActiveHotel] = useState<any>(null);
 
-  const dir = '/3d/hotels/';
-
   const hotels = [
-    {
-      name: 'Hilton Hotel',
-      hdriSrc: `${dir}/hilton_hotel/hotel_room.jpg`,
-      previewSrc: `${dir}/hilton_hotel/ht2.jpg`,
-    },
-    {
-      name: 'Radison Blu Hotel',
-      hdriSrc: `${dir}/radison_blu_hotel/hotel_room.jpg`,
-      previewSrc: `${dir}/radison_blu_hotel/ht2.jpg`,
-    },
-    {
-      name: 'Getfam Hotel',
-      hdriSrc: `${dir}/getfam_hotel/hotel_room.jpg`,
-      previewSrc: `${dir}/getfam_hotel/ht2.jpg`,
-    },
-    {
-      name: 'Sarem International Hotel',
-      hdriSrc: `${dir}/sarem_international_hotel/hotel_room.jpg`,
-      previewSrc: `${dir}/sarem_international_hotel/ht2.jpg`,
-    },
+    { name: 'Hilton Hotel' },
+    { name: 'Radison Blu Hotel' },
+    { name: 'Getfam Hotel' },
+    { name: 'Sarem International Hotel' },
+    { name: 'The Grand Palace Suites Hotel' },
+    { name: 'Ethiopian Skylight Hotel' },
   ];
 
   return (
