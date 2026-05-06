@@ -90,7 +90,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
         >
           {/* Preview */}
           <motion.img
-            src={`/3d/hotels/${dir}/preview.png`}
+            src={`/3d/hotels/${dir}/pre.png`}
             className='absolute inset-0 w-full h-full object-cover z-10'
             animate={{ opacity: loaded ? 0 : 1 }}
             transition={{ duration: 0.5 }}
