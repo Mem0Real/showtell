@@ -7,7 +7,7 @@ export const ShowRoom = () => {
   const rooms = [
     { label: 'Living Room', src: '/3d/hotels/showroom/living.jpg' },
     { label: 'Bedroom', src: '/3d/hotels/showroom/bedroom.jpg' },
-    { label: 'Bathroom', src: '/3d/hotels/showroom/bathroom.jpg' },
+    { label: 'Bathroom', src: '/3d/hotels/showroom/bathroom.jpeg' },
   ];
 
   return (
