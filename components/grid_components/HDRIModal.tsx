@@ -1,37 +1,50 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { r3fTunnel } from '@/lib/r3fTunnel';
 import { HDRIScene } from './HDRIScene';
 
+const preloadImage = (src: string) =>
+  new Promise<void>((resolve) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => resolve();
+  });
+
 export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void }) => {
-  const [loaded, setLoaded] = useState(false);
+  const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+
   const [dragging, setDragging] = useState(false);
 
   const rotation = useRef({ x: 0, y: 0 });
 
-  // Dragging logic
+  const dir = hotel.name.replaceAll(' ', '_').toLowerCase();
+
+  /* ---------------- PRELOAD ---------------- */
+
+  useEffect(() => {
+    const previewSrc = `/3d/hotels/${dir}/pre.png`;
+
+    preloadImage(previewSrc).then(() => {
+      setPreviewLoaded(true);
+    });
+  }, [dir]);
+
+  /* ---------------- ROTATION ---------------- */
+
   useEffect(() => {
     const move = (e: PointerEvent) => {
       if (!dragging) return;
 
-      const dx = e.movementX;
-      const dy = e.movementY;
-
-      rotation.current.x += dx * 0.005;
-      rotation.current.y += dy * 0.005;
-
-      rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
+      rotation.current.x += e.movementX * 0.005;
+      rotation.current.y += e.movementY * 0.005;
     };
 
     const up = () => {
       setDragging(false);
-
-      // exit pointer lock on release
-      if (document.pointerLockElement) {
-        document.exitPointerLock();
-      }
+      if (document.pointerLockElement) document.exitPointerLock();
     };
 
     window.addEventListener('pointermove', move);
@@ -43,100 +56,80 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
     };
   }, [dragging]);
 
-  // Close on esc
+  /* ---------------- ESC ---------------- */
+
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-
-        // also exit pointer lock if active
-        if (document.pointerLockElement) {
-          document.exitPointerLock();
-        }
-      }
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
     };
 
-    window.addEventListener('keydown', handleKey);
-
-    return () => {
-      window.removeEventListener('keydown', handleKey);
-    };
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
   }, [onClose]);
-
-  const dir = hotel.name.replaceAll(' ', '_').toLowerCase();
 
   return (
     <AnimatePresence>
-      <motion.div
-        className='fixed z-100 inset-0 flex items-center justify-center'
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        {/* Backdrop */}
-        <div className='absolute inset-0 bg-black/10 -z-50' onClick={onClose} />
+      <motion.div className='fixed inset-0 z-100 flex items-center justify-center'>
+        {/* BACKDROP */}
+        <div className='absolute inset-0 bg-black/20' onClick={onClose} />
 
-        {/* Modal */}
+        {/* MODAL */}
         <motion.div
-          className='relative w-[90vw] h-[80vh] lg:w-[70vw] lg:h-[70vh] rounded-xl overflow-hidden z-60'
-          initial={{ scale: 0.96, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.96, opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          className='relative w-[90vw] h-[80vh] lg:w-[70vw] lg:h-[70vh] overflow-hidden rounded-xl'
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
           style={{
-            cursor: dragging ? 'none' : 'grab', // move cursor control HERE
+            cursor: dragging ? 'none' : 'grab',
             touchAction: 'none',
           }}
         >
           {/* Preview */}
-          <motion.img
-            src={`/3d/hotels/${dir}/pre.png`}
-            className='absolute inset-0 w-full h-full object-cover z-10'
-            animate={{ opacity: loaded ? 0 : 1 }}
-            transition={{ duration: 0.5 }}
-          />
-
-          {/* Spinner */}
-          {!loaded && (
-            <div className='absolute inset-0 flex items-center justify-center z-20'>
-              <div className='w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin' />
-            </div>
+          {previewLoaded && (
+            <motion.img
+              src={`/3d/hotels/${dir}/pre.png`}
+              className='absolute inset-0 w-full h-full object-cover scale-105'
+              initial={{ opacity: 1 }}
+              animate={{ opacity: sceneReady ? 0 : 1 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              style={{
+                filter: 'blur(12px)',
+                transform: 'scale(1.1)',
+              }}
+            />
           )}
 
-          {/* Close Button (FIXED Z-INDEX) */}
-          <button
-            onClick={onClose}
-            className='z-50 absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full hover:cursor-pointer hover:scale-110 hover:bg-black/40 transition-all duration-100'
-          >
-            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' strokeWidth='2'>
-              <line x1='18' y1='6' x2='6' y2='18' />
-              <line x1='6' y1='6' x2='18' y2='18' />
-            </svg>
-          </button>
-
-          {/* 3D Layer */}
+          {/* Scene */}
           <motion.div
-            className='absolute inset-0 z-0'
-            animate={{ opacity: loaded ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
+            className='absolute inset-0'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: sceneReady ? 1 : 0 }}
+            transition={{ duration: 0.8 }}
           >
             <r3fTunnel.In>
-              <HDRIScene
-                src={`/3d/hotels/${dir}/hotel_room.jpg`}
-                rotation={rotation}
-                active={true}
-                onReady={() => setLoaded(true)}
-              />
+              <Suspense fallback={null}>
+                <HDRIScene
+                  src={`/3d/hotels/${dir}/hotel_room.jpg`}
+                  rotation={rotation}
+                  active={true}
+                  onReady={() => setSceneReady(true)}
+                />
+              </Suspense>
             </r3fTunnel.In>
           </motion.div>
 
+          <button
+            onClick={onClose}
+            className='absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/60 px-3 py-1 rounded-full'
+          >
+            ✕
+          </button>
+
+          {/* Drag layer */}
           <div
             className='absolute inset-0 z-30'
             onPointerDown={(e) => {
-              e.stopPropagation();
-
               setDragging(true);
-
               (e.currentTarget as HTMLElement).requestPointerLock();
             }}
           />
