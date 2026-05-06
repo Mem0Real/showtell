@@ -68,7 +68,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
   return (
     <AnimatePresence>
       <motion.div
-        className='fixed z-100 inset-0 flex items-center justify-center'
+        className={`fixed z-100 inset-0 flex items-center justify-center ${!loaded && 'bg-black/40'}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -90,8 +90,8 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
         >
           {/* Preview */}
           <motion.img
-            src={`/3d/hotels/${dir}/pre.png`}
-            className='absolute inset-0 w-full h-full object-cover z-10'
+            src={`/3d/hotels/${dir}/preview.png`}
+            className='absolute inset-0 w-full h-full object-cover z-10 blur-md'
             animate={{ opacity: loaded ? 0 : 1 }}
             transition={{ duration: 0.5 }}
           />
