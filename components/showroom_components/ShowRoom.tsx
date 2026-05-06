@@ -1,6 +1,7 @@
 'use client';
 
 import { RoomViewer } from '@/components/showroom_components/RoomViewer';
+import { playfair } from '@/lib/fonts';
 
 export const ShowRoom = () => {
   const rooms = [
@@ -11,19 +12,35 @@ export const ShowRoom = () => {
 
   return (
     <section className='w-full py-24 px-4 md:px-10'>
-      <div className='max-w-[85vw] mx-auto'>
-        {/* Container */}
-        <div className='relative grid grid-cols-1 lg:grid-cols-2 gap-10 p-6 md:p-4 rounded-3xl bg-linear-to-br from-neutral-100 to-neutral-200 border border-neutral-300/40 overflow-hidden'>
-          {/* subtle background accent */}
-          <div className='absolute inset-0 opacity-30 pointer-events-none'>
-            <div className='absolute size-100 bg-black/10 blur-3xl -top-20 -left-20 rounded-full' />
+      <div className='relative max-w-[85vw] mx-auto'>
+        {/* BACKGROUND GLOW */}
+        <div className='absolute inset-0 -z-10'>
+          <div className='absolute size-125 bg-purple-500/20 blur-[80px] md:blur-[120px] -top-20 -left-20 rounded-full' />
+          <div className='absolute size-100 bg-blue-500/20 blur-[100px] bottom-0 right-0 rounded-full' />
+        </div>
+
+        {/* MAIN PANEL */}
+        <div
+          className='relative grid grid-cols-1 lg:grid-cols-2 gap-10 p-6 md:p-10 md:pr-16 bg-stone-900 md:bg-stone-900/90 backdrop-blur-xl border border-white/30 shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hidden clip-path-tablet lg:clip-path-desktop'
+          // style={{
+          //   clipPath: 'polygon(0% 0%, 95% 0%, 100% 15%, 100% 100%, 5% 100%, 0% 85%)',
+          // }}
+        >
+          <div className='absolute inset-0 pointer-events-none'>
+            <div className='absolute inset-0 border border-white/20 rounded-[inherit]' />
+            <div className='absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent opacity-30 animate-[shine_6s_linear_infinite]' />
           </div>
+
+          <div className='absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/40 to-transparent' />
+          <div className='absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-black/20 to-transparent' />
 
           {/* LEFT TEXT */}
           <div className='relative z-10 flex flex-col justify-center'>
-            <h2 className='text-4xl md:text-5xl font-bold mb-4 text-neutral-900'>Explore Every Room</h2>
+            <h2 className={` text-4xl md:text-5xl font-bold mb-4 text-neutral-200 ${playfair.className}`}>
+              Explore Every Room
+            </h2>
 
-            <p className='text-neutral-700/70 leading-relaxed max-w-md'>
+            <p className='text-neutral-300/70 leading-relaxed max-w-md'>
               Step inside each space and experience how it feels to be there. Drag to look around and switch between
               rooms instantly.
             </p>
@@ -31,7 +48,9 @@ export const ShowRoom = () => {
 
           {/* RIGHT VIEWER */}
           <div className='relative h-100 md:h-125 lg:h-150'>
-            <RoomViewer rooms={rooms} />
+            <div className='absolute inset-0 rounded-2xl overflow-hidden border border-black/40 shadow-[inset_0_0_40px_rgba(255,255,255,0.2)]'>
+              <RoomViewer rooms={rooms} />
+            </div>
           </div>
         </div>
       </div>

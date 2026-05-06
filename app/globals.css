@@ -27,3 +27,27 @@ body.overflow-hidden {
   /* Prevent layout shift from scrollbar disappearing */
   padding-right: var(--scrollbar-width, 0px);
 }
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* MOBILE (clean + less aggressive) */
+.clip-path-mobile {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%);
+}
+
+/* TABLET (slight angle) */
+.clip-path-tablet {
+  clip-path: polygon(0% 0%, 97% 0%, 100% 10%, 100% 100%, 3% 100%, 0% 90%);
+}
+
+/* DESKTOP (your original sharp look) */
+.clip-path-desktop {
+  clip-path: polygon(0% 0%, 95% 0%, 100% 15%, 100% 100%, 5% 100%, 0% 85%) !important;
+}

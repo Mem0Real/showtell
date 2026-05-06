@@ -78,7 +78,7 @@ export const RoomViewer = ({ rooms }: any) => {
         <select
           value={active.src}
           onChange={(e) => setActive(rooms.find((r: any) => r.src === e.target.value))}
-          className='bg-black/60 text-white px-3 py-1 rounded-md text-sm cursor-pointer'
+          className='bg-black/60 text-white px-4 py-2 rounded-md text-sm cursor-pointer border border-white'
         >
           {rooms.map((room: any) => (
             <option key={room.src} value={room.src}>
