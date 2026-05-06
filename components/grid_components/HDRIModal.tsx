@@ -22,7 +22,7 @@ export const HDRIModal = ({ hotel, onClose }: { hotel: any; onClose: () => void 
       rotation.current.x += dx * 0.005;
       rotation.current.y += dy * 0.005;
 
-      // rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
+      rotation.current.y = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotation.current.y));
     };
 
     const up = () => {
