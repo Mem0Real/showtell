@@ -66,7 +66,7 @@ export const RoomViewer = ({ rooms }: any) => {
 
   return (
     <div
-      className='relative w-full h-full rounded-2xl overflow-hidden bg-black/20'
+      className='relative w-full h-full rounded-2xl overflow-hidden bg-black/40'
       style={{
         cursor: dragging ? 'none' : 'grab',
         touchAction: 'none',
@@ -76,7 +76,10 @@ export const RoomViewer = ({ rooms }: any) => {
       <div className='absolute top-4 right-4 z-20'>
         <select
           value={active.src}
-          onChange={(e) => setActive(rooms.find((r: any) => r.src === e.target.value))}
+          onChange={(e) => {
+            setActive(rooms.find((r: any) => r.src === e.target.value));
+            setLoaded(false);
+          }}
           className='bg-black/60 text-white px-4 py-2 rounded-md text-sm cursor-pointer border border-white'
         >
           {rooms.map((room: any) => (
@@ -89,7 +92,7 @@ export const RoomViewer = ({ rooms }: any) => {
 
       {/* Loading */}
       {!loaded && (
-        <div className='absolute inset-0 flex items-center justify-center z-10'>
+        <div className='absolute inset-0 flex items-center justify-center z-50 bg-white/40 backdrop:blur-2xl'>
           <div className='w-8 h-8 border-2 border-white/40 border-t-white rounded-full animate-spin' />
         </div>
       )}

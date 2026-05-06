@@ -22,9 +22,6 @@ export const ShowRoom = () => {
         {/* MAIN PANEL */}
         <div
           className='relative grid grid-cols-1 lg:grid-cols-2 gap-10 p-6 md:p-10 md:pr-16 bg-stone-900 md:bg-stone-900/90 backdrop-blur-xl border border-white/30 shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hidden clip-path-tablet lg:clip-path-desktop'
-          // style={{
-          //   clipPath: 'polygon(0% 0%, 95% 0%, 100% 15%, 100% 100%, 5% 100%, 0% 85%)',
-          // }}
         >
           <div className='absolute inset-0 pointer-events-none'>
             <div className='absolute inset-0 border border-white/20 rounded-[inherit]' />
