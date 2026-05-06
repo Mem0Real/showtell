@@ -11,6 +11,7 @@ import { AnotherClipMask } from '@/components/AnotherClipMask';
 import { Contact } from '@/components/contact_components/Contact';
 import { Footer } from '@/components/Footer';
 import { R3fCanvasHost } from '@/components/R3fCanvasHost';
+import { ShowRoom } from '@/components/showroom_components/ShowRoom';
 
 /* TODO 
   - contact interactive elements not working
@@ -28,6 +29,7 @@ export default function Home() {
       <Hero />
       <BentoGrid />
       <ClipMask />
+      <ShowRoom />
       <HotelGrid />
       <AnotherClipMask />
       <Contact />
