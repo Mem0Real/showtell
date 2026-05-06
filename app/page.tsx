@@ -12,6 +12,7 @@ import { Contact } from '@/components/contact_components/Contact';
 import { Footer } from '@/components/Footer';
 import { R3fCanvasHost } from '@/components/R3fCanvasHost';
 import { ShowRoom } from '@/components/showroom_components/ShowRoom';
+import { Viewer } from '@/components/viewing_components/Viewer';
 
 /* TODO 
   - contact interactive elements not working
@@ -30,8 +31,8 @@ export default function Home() {
       <BentoGrid />
       <ClipMask />
       <ShowRoom />
-      <HotelGrid />
       <AnotherClipMask />
+      <HotelGrid />
       <Contact />
       <Footer />
     </main>

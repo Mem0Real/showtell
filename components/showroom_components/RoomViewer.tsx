@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { r3fTunnel } from '@/lib/r3fTunnel';
 import { RoomScene } from '@/components/showroom_components/RoomScene';
 import { Canvas } from '@react-three/fiber';
 

@@ -15,7 +15,7 @@ export const HotelCard = ({ hotel, onOpen }: { hotel: Hotel; onOpen: (hotel: Hot
       whileHover={{ scale: 1.02 }}
       onClick={() => onOpen(hotel)}
     >
-      <img src={`/3d/hotels/${dir}/hotel_room.jpg`} className='absolute inset-0 w-full h-full object-cover' />
+      <img src={`/3d/hotels/${dir}/card.png`} className='absolute inset-0 w-full h-full object-cover' />
 
       <div className='absolute inset-0 bg-linear-to-t from-black/80 to-transparent' />
 
