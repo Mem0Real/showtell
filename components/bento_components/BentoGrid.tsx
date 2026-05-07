@@ -22,16 +22,9 @@ export interface BentoItem {
     area: string;
     rating: number;
   };
-  position?: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  rotation?: {
-    x: number;
-    y: number;
-    z: number;
-  };
+  cameraPosition?: [number, number, number];
+  target?: [number, number, number];
+  angle?: number;
 }
 
 const bentoItems: BentoItem[] = [
@@ -48,16 +41,17 @@ const bentoItems: BentoItem[] = [
     },
     image: '/images/hotels/inter-luxury.webp',
     modelPath: '/3d/buildings/1_tScaled.glb',
-    position: {
-      x: -2.8,
-      y: -3,
-      z: -4,
-    },
-    rotation: {
-      x: 0,
-      y: Math.PI / 2,
-      z: 0,
-    },
+    // cameraPosition: [14.81, 1.25, 10.5],
+    // target: [-0.36, 3.41, 0.37],
+    // angle: 1.65,
+
+    // cameraPosition: [9.43, 1.11, 7.2],
+    // target: [-0.38, 3.28, 0.31],
+    // angle: 1.75,
+
+    cameraPosition: [10.8, 0.75, 8.7],
+    target: [-0.38, 3.28, 0.31],
+    angle: 1.75,
   },
   {
     id: 'sheraton',

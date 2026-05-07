@@ -113,12 +113,8 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
           onClick={handleBackdropClick}
         >
           {/* Modal Container */}
-          <motion.div
+          <div
             ref={modalRef}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ duration: 0.3 }}
             onClick={(e) => e.stopPropagation()}
             className={`
               bg-light shadow-2xl flex flex-col
@@ -173,7 +169,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
 
             {/* 3D Scene Content */}
             <div className='flex-1 bg-light'>{children}</div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

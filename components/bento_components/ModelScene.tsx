@@ -1,152 +1,104 @@
 'use client';
 
-import { useRef, useEffect, useState, Suspense } from 'react';
-import * as THREE from 'three';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows, Html, useProgress, Float } from '@react-three/drei';
+import { Suspense, useEffect, useRef } from 'react';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { Canvas, useThree } from '@react-three/fiber';
+import { OrbitControls, ContactShadows, Environment, Sky } from '@react-three/drei';
 
 import { ModelLoader } from '@/components/bento_components/ModelLoader';
 import { BentoItem } from '@/components/bento_components/BentoGrid';
 
-const Loader = ({ onDone }: { onDone?: () => void }) => {
-  const { progress, active } = useProgress();
-
-  useEffect(() => {
-    if (!active && progress === 100) {
-      onDone?.();
-    }
-  }, [active, progress, onDone]);
+function SceneDebugger({ target, angle }: { target: [number, number, number] | undefined; angle: number | undefined }) {
+  const controlsRef = useRef<any>(null);
 
   return (
-    <Html center>
-      <div className='flex flex-col items-center gap-3'>
-        <div className='w-12 h-12 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin' />
-        <p className='text-gray-600 text-sm'>{progress.toFixed(0)}%</p>
-      </div>
-    </Html>
-  );
-};
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enableDamping
+      dampingFactor={0.05}
+      minDistance={2}
+      maxDistance={200}
+      target={target || [0, 0, 0]}
+      minPolarAngle={angle ? angle - 0.13 : undefined}
+      maxPolarAngle={angle ? angle : undefined}
+      onEnd={(e: any) => {
+        const camera = e.target.object;
+        const target = e.target.target;
+        const angle = e.target.getPolarAngle();
 
-interface ModelSceneProps {
-  modelPath?: string;
+        const config = {
+          cameraPosition: [
+            Number(camera.position.x.toFixed(2)),
+            Number(camera.position.y.toFixed(2)),
+            Number(camera.position.z.toFixed(2)),
+          ],
+
+          target: [Number(target.x.toFixed(2)), Number(target.y.toFixed(2)), Number(target.z.toFixed(2))],
+          angle,
+        };
+
+        console.log(config);
+
+        navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+      }}
+    />
+  );
 }
 
-// Simple placeholder model - a floating geometric shape
-const PlaceholderModel = () => {
-  const groupRef = useRef<THREE.Group>(null);
+function ResizeFix() {
+  const { gl, camera, size } = useThree();
 
-  return (
-    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
-      <group ref={groupRef}>
-        {/* Main shape */}
-        <mesh>
-          <icosahedronGeometry args={[1.5, 1]} />
-          <meshStandardMaterial color='#e2e8f0' metalness={0.1} roughness={0.5} wireframe={false} />
-        </mesh>
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      gl.setSize(size.width, size.height);
+      camera.updateProjectionMatrix();
+    }, 300);
 
-        {/* Wireframe overlay */}
-        <mesh>
-          <icosahedronGeometry args={[1.55, 1]} />
-          <meshBasicMaterial color='#94a3b8' wireframe transparent opacity={0.3} />
-        </mesh>
+    return () => clearTimeout(timeout);
+  }, [gl, camera, size]);
 
-        {/* Orbiting rings */}
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[2, 0.03, 16, 100]} />
-          <meshStandardMaterial color='#cbd5e1' />
-        </mesh>
-
-        <mesh rotation={[0, Math.PI / 2, 0]}>
-          <torusGeometry args={[2.2, 0.03, 16, 100]} />
-          <meshStandardMaterial color='#cbd5e1' />
-        </mesh>
-
-        {/* Small floating particles */}
-        {Array.from({ length: 8 }).map((_, i) => {
-          const angle = (i / 8) * Math.PI * 2;
-          const radius = 2.5;
-          const x = Math.cos(angle) * radius;
-          const z = Math.sin(angle) * radius;
-
-          return (
-            <mesh key={i} position={[x, 0, z]}>
-              <sphereGeometry args={[0.05, 16, 16]} />
-              <meshStandardMaterial color='#64748b' emissive='#64748b' emissiveIntensity={0.5} />
-            </mesh>
-          );
-        })}
-      </group>
-    </Float>
-  );
-};
+  return null;
+}
 
 export const ModelScene = ({ selectedItem }: { selectedItem: BentoItem }) => {
-  const [loaded, setLoaded] = useState(false);
-
   return (
-    <div className='w-full h-full relative' style={{ backgroundColor: '#f1f5f9' }}>
-      {/* Smooth fade overlay */}
-      <div
-        className={`absolute inset-0 bg-light transition-opacity duration-500 z-10 ${
-          loaded ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-      />
-
-      {/* Loading Overlay */}
-      <AnimatePresence>
-        {!loaded && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className='absolute inset-0 z-20 bg-light flex items-center justify-center'
-          >
-            <div className='flex flex-col items-center gap-4'>
-              <div className='w-12 h-12 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin' />
-              <p className='text-gray-600 text-sm font-medium'>Loading 3D Model...</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+    <div className='w-full h-full' style={{ backgroundColor: '#f1f5f9' }}>
       <Canvas
-        camera={{ position: [5, 3, 5], fov: 45 }}
-        gl={{ antialias: true }}
-        onCreated={({ gl }) => {
-          gl.setClearColor('#f1f5f9');
+        camera={{
+          position: selectedItem.cameraPosition,
+          fov: 40,
         }}
+        gl={{ antialias: true }}
+        onCreated={({ gl, camera, size }) => {
+          gl.setClearColor('#f1f5f9');
+
+          requestAnimationFrame(() => {
+            gl.setSize(size.width, size.height);
+            camera.updateProjectionMatrix();
+          });
+        }}
+        frameloop='demand'
       >
-        <color attach='background' args={['#f1f5f9']} />
+        <ResizeFix />
+
+        {/* <color attach='background' args={['#a2a2a2']} /> */}
 
         <ambientLight intensity={0.6} />
         <spotLight position={[10, 10, 10]} intensity={1} />
 
-        {/* {modelPath ? <ModelLoader path={modelPath} onLoaded={() => setLoaded(true)} /> : <PlaceholderModel />} */}
-        <Suspense fallback={<Loader onDone={() => setLoaded(true)} />}>
-          {selectedItem.modelPath && (
-            <ModelLoader
-              path={selectedItem.modelPath}
-              position={selectedItem?.position}
-              rotation={selectedItem?.rotation}
-              onLoaded={() => setLoaded(true)}
-            />
-          )}
-        </Suspense>
+        <Sky sunPosition={[100, 20, 100]} turbidity={10} />
 
-        <ContactShadows position={[0, -3, 0]} opacity={0.3} scale={10} blur={2} />
-        {/* <Environment preset='sunset' /> */}
+        <Suspense fallback={null}>{selectedItem.modelPath && <ModelLoader path={selectedItem.modelPath} />}</Suspense>
 
-        <OrbitControls
-          enablePan={false}
-          // enableDamping
-          // dampingFactor={0.05}
-          // autoRotate
-          // autoRotateSpeed={0.5}
-          minPolarAngle={Math.PI / 1.95}
-          maxPolarAngle={Math.PI / 1.95}
-        />
+        <mesh rotation={[-Math.PI / 2, 0, -Math.PI]} position={[0, -0.15, 0]}>
+          <planeGeometry args={[24, 24]} />
+          <meshBasicMaterial color={'#777'} />
+        </mesh>
+
+        {/* <ContactShadows position={[0, 0, 0]} opacity={0.8} scale={20} blur={2.5} far={10} /> */}
+
+        <SceneDebugger target={selectedItem.target} angle={selectedItem?.angle} />
       </Canvas>
     </div>
   );

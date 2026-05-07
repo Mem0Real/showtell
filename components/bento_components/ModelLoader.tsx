@@ -1,27 +1,29 @@
 import { useGLTF } from '@react-three/drei';
-import { useEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
+import * as THREE from 'three';
 
-export const ModelLoader = ({
-  path,
-  position,
-  rotation,
-  onLoaded,
-}: {
-  path: string;
-  position?: { x: number; y: number; z: number };
-  rotation?: { x: number; y: number; z: number };
-  onLoaded?: () => void;
-}) => {
+export const ModelLoader = ({ path }: { path: string }) => {
   const { scene } = useGLTF(path);
 
-  useEffect(() => {
-    if (scene) {
-      onLoaded?.();
-    }
+  const groupRef = useRef<THREE.Group>(null);
+
+  useLayoutEffect(() => {
+    const box = new THREE.Box3().setFromObject(scene);
+
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+
+    // center horizontally
+    scene.position.x = -center.x;
+    scene.position.z = -center.z;
+
+    // place model on ground
+    scene.position.y = -box.min.y;
   }, [scene]);
 
-  const [x, y, z] = [position?.x, position?.y, position?.z];
-  const [rotX, rotY, rotZ] = [rotation?.x, rotation?.y, rotation?.z];
-
-  return <primitive object={scene} scale={1} position={[x, y, z]} rotation={[rotX, rotY, rotZ]} />;
+  return (
+    <group ref={groupRef}>
+      <primitive object={scene} />
+    </group>
+  );
 };
