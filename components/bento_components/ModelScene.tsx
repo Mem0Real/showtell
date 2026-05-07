@@ -17,8 +17,8 @@ function SceneDebugger({ target, angle }: { target: [number, number, number] | u
       makeDefault
       enableDamping
       dampingFactor={0.05}
-      minDistance={2}
-      maxDistance={200}
+      // minDistance={2}
+      // maxDistance={200}
       target={target || [0, 0, 0]}
       minPolarAngle={angle ? angle - 0.13 : undefined}
       maxPolarAngle={angle ? angle : undefined}
@@ -68,6 +68,7 @@ export const ModelScene = ({ selectedItem }: { selectedItem: BentoItem }) => {
         camera={{
           position: selectedItem.cameraPosition,
           fov: 40,
+          far: 100000,
         }}
         gl={{ antialias: true }}
         onCreated={({ gl, camera, size }) => {
@@ -84,7 +85,7 @@ export const ModelScene = ({ selectedItem }: { selectedItem: BentoItem }) => {
 
         {/* <color attach='background' args={['#a2a2a2']} /> */}
 
-        <ambientLight intensity={0.6} />
+        <ambientLight intensity={3.6} />
         <spotLight position={[10, 10, 10]} intensity={1} />
 
         <Sky sunPosition={[100, 20, 100]} turbidity={10} />

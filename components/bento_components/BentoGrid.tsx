@@ -65,7 +65,11 @@ const bentoItems: BentoItem[] = [
       rating: 4.9,
     },
     image: '/images/hotels/sheraton.webp',
-    modelPath: '/3d/buildings/2.glb',
+    modelPath: '/3d/buildings/1_tsGround.glb',
+
+    cameraPosition: [9.67, 1.3, 7.6],
+    target: [-0.29, 3.06, 0.12],
+    angle: 1.71,
   },
   {
     id: 'hyatt-regency',
