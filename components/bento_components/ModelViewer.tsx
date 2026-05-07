@@ -13,19 +13,7 @@ interface ModelViewerProps {
 
 export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }: ModelViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
-
-  // Reset loading when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoading(true);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   // Handle Lenis scroll lock using the exported functions
   useEffect(() => {
@@ -183,27 +171,8 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
               </div>
             </div>
 
-            {/* Loading Overlay */}
-            <AnimatePresence>
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className='absolute inset-0 z-20 bg-light flex items-center justify-center'
-                >
-                  <div className='flex flex-col items-center gap-4'>
-                    <div className='w-12 h-12 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin' />
-                    <p className='text-gray-600 text-sm font-medium'>Loading 3D Model...</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* 3D Scene Content */}
-            <div className='flex-1 bg-light' onLoad={() => setIsLoading(false)}>
-              {children}
-            </div>
+            <div className='flex-1 bg-light'>{children}</div>
           </motion.div>
         </motion.div>
       )}
