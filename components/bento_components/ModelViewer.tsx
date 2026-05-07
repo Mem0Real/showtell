@@ -109,7 +109,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center'
+          className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-center items-center '
           onClick={handleBackdropClick}
         >
           {/* Modal Container */}
@@ -118,7 +118,7 @@ export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }:
             onClick={(e) => e.stopPropagation()}
             className={`
               bg-light shadow-2xl flex flex-col
-              ${isFullscreen ? 'fixed inset-0' : 'relative w-[90vw] h-[80vh] max-w-6xl rounded-2xl overflow-hidden'}
+              ${isFullscreen ? 'fixed inset-0' : 'relative w-[97vw] md:w-[95vw] lg:w-[90vw] h-[80vh] max-w-6xl rounded-2xl overflow-hidden'}
             `}
           >
             {/* Header */}
