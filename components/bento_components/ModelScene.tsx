@@ -18,7 +18,7 @@ function SceneDebugger({ target, angle }: { target: [number, number, number] | u
       enableDamping
       dampingFactor={0.05}
       minDistance={2}
-      maxDistance={200}
+      maxDistance={20}
       target={target || [0, 0, 0]}
       minPolarAngle={angle ? angle - 0.13 : undefined}
       maxPolarAngle={angle ? angle : undefined}
@@ -68,7 +68,7 @@ export const ModelScene = ({ selectedItem }: { selectedItem: BentoItem }) => {
         camera={{
           position: selectedItem.cameraPosition,
           fov: 40,
-          // far: 100000,
+          // far: 1000000,
         }}
         gl={{ antialias: true }}
         onCreated={({ gl, camera, size }) => {
@@ -90,12 +90,14 @@ export const ModelScene = ({ selectedItem }: { selectedItem: BentoItem }) => {
 
         <Sky sunPosition={[100, 20, 100]} turbidity={10} />
 
-        <Suspense fallback={null}>{selectedItem.modelPath && <ModelLoader path={selectedItem.modelPath} />}</Suspense>
+        <Suspense fallback={null}>{selectedItem.modelPath && <ModelLoader item={selectedItem} />}</Suspense>
 
-        <mesh rotation={[-Math.PI / 2, 0, -Math.PI]} position={[0, -0.15, 0]}>
-          <planeGeometry args={[24, 24]} />
-          <meshBasicMaterial color={'#777'} />
-        </mesh>
+        {!selectedItem.ground && (
+          <mesh rotation={[-Math.PI / 2, 0, -Math.PI]} position={[0, -0.15, 0]}>
+            <planeGeometry args={[24, 24]} />
+            <meshBasicMaterial color={'#777'} />
+          </mesh>
+        )}
 
         {/* <ContactShadows position={[0, 0, 0]} opacity={0.8} scale={20} blur={2.5} far={10} /> */}
 

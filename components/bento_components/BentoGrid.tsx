@@ -25,6 +25,9 @@ export interface BentoItem {
   cameraPosition?: [number, number, number];
   target?: [number, number, number];
   angle?: number;
+
+  scale?: number;
+  ground?: boolean;
 }
 
 const bentoItems: BentoItem[] = [
@@ -41,13 +44,6 @@ const bentoItems: BentoItem[] = [
     },
     image: '/images/hotels/inter-luxury.webp',
     modelPath: '/3d/buildings/1_tScaled.glb',
-    // cameraPosition: [14.81, 1.25, 10.5],
-    // target: [-0.36, 3.41, 0.37],
-    // angle: 1.65,
-
-    // cameraPosition: [9.43, 1.11, 7.2],
-    // target: [-0.38, 3.28, 0.31],
-    // angle: 1.75,
 
     cameraPosition: [10.8, 0.75, 8.7],
     target: [-0.38, 3.28, 0.31],
@@ -65,11 +61,11 @@ const bentoItems: BentoItem[] = [
       rating: 4.9,
     },
     image: '/images/hotels/sheraton.webp',
-    modelPath: '/3d/buildings/1_tsGround.glb',
+    modelPath: '/3d/buildings/fixed/1.glb',
 
-    cameraPosition: [9.67, 1.3, 7.6],
-    target: [-0.29, 3.06, 0.12],
-    angle: 1.71,
+    cameraPosition: [-108.54, 19.51, 126],
+    target: [-13.61, 42.6, 5.25],
+    angle: 1.72,
   },
   {
     id: 'hyatt-regency',
@@ -83,7 +79,14 @@ const bentoItems: BentoItem[] = [
       rating: 4.5,
     },
     image: '/images/hotels/hyatt-regency.webp',
-    modelPath: '/3d/buildings/3.glb',
+    modelPath: '/3d/buildings/fixed/3.glb',
+
+    cameraPosition: [5.37, 0.44, 5.66],
+    target: [0.29, 1.39, 0.18],
+    angle: 1.7,
+
+    scale: 0.005,
+    ground: true,
   },
   {
     id: 'elilly-international',
@@ -97,6 +100,14 @@ const bentoItems: BentoItem[] = [
       rating: 4.1,
     },
     image: '/images/hotels/elilly-international.webp',
+    modelPath: '/3d/buildings/fixed/4.glb',
+
+    cameraPosition: [-8.31, 0.84, 7.75],
+    target: [-0.25, 2, -0.17],
+    angle: 1.67,
+
+    scale: 0.05,
+    ground: true,
   },
   {
     id: 'golden-tulip',
@@ -123,7 +134,6 @@ const bentoItems: BentoItem[] = [
       rating: 4.9,
     },
     image: '/images/hotels/haile-grand.webp',
-    modelPath: '/3d/buildings/4.glb',
   },
   {
     id: 'debre-damo',
@@ -137,6 +147,14 @@ const bentoItems: BentoItem[] = [
       rating: 4.1,
     },
     image: '/images/hotels/debre-damo.webp',
+    modelPath: '/3d/buildings/fixed/2.glb',
+
+    cameraPosition: [-4.78, 0.34, -2.98],
+    target: [-0.17, 1.04, 0.01],
+    angle: 1.69,
+
+    scale: 0.005,
+    ground: true,
   },
   {
     id: 'best-western-plus',
@@ -150,7 +168,6 @@ const bentoItems: BentoItem[] = [
       rating: 4.7,
     },
     image: '/images/hotels/best-western-plus.webp',
-    modelPath: '/3d/buildings/5.glb',
   },
 ];
 

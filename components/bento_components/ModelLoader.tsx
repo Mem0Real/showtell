@@ -1,9 +1,10 @@
+import { BentoItem } from '@/components/bento_components/BentoGrid';
 import { useGLTF } from '@react-three/drei';
 import { useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export const ModelLoader = ({ path }: { path: string }) => {
-  const { scene } = useGLTF(path);
+export const ModelLoader = ({ item }: { item: BentoItem }) => {
+  const { scene } = useGLTF(item.modelPath!);
 
   const groupRef = useRef<THREE.Group>(null);
 
@@ -23,7 +24,7 @@ export const ModelLoader = ({ path }: { path: string }) => {
 
   return (
     <group ref={groupRef}>
-      <primitive object={scene} />
+      <primitive object={scene} scale={item.scale || 1} />
     </group>
   );
 };
