@@ -1,11 +1,11 @@
 'use client';
 
-import { Environment, OrbitControls } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { Environment, OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+
 const Viewer = () => {
-  const [loaded, setLoaded] = useState(false);
   const [dragging, setDragging] = useState(false);
 
   const rotation = useRef({ x: 0, y: 0 });
