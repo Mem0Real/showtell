@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className='w-screen h-full bg-light'>
+    <main className='w-full h-full bg-light'>
       <R3fCanvasHost />
       <Hero />
       <BentoGrid />

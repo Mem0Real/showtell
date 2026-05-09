@@ -49,6 +49,20 @@ export const Hero = () => {
   }, []);
 
   // Phase transitions
+
+  // Force start after 2 seconds even if video isn't loaded
+
+  useEffect(() => {
+    let forceStartTimer: NodeJS.Timeout;
+    forceStartTimer = setTimeout(() => {
+      setVideoLoaded(true);
+    }, 2000);
+
+    return () => {
+      clearTimeout(forceStartTimer);
+    };
+  }, []);
+
   useEffect(() => {
     if (!videoLoaded) return;
 
@@ -62,6 +76,7 @@ export const Hero = () => {
         // Jump straight to complete state
         setPhase('complete');
         setShowOverlayContent(true);
+
         if (videoRef.current) {
           videoRef.current.play();
         }
@@ -89,8 +104,11 @@ export const Hero = () => {
     timers.push(
       setTimeout(() => {
         setPhase('complete');
+
         if (videoRef.current) {
-          videoRef.current.play();
+          if (videoRef.current) {
+            videoRef.current.play().catch(() => {});
+          }
         }
       }, 2500),
     );
