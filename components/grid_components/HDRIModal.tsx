@@ -60,14 +60,17 @@ export const HDRIModal = ({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-90 flex items-center justify-center">
+    <div className="fixed inset-0 z-90 flex items-center justify-center cursor-pointer">
       {/* BACKDROP */}
-      <div className="absolute inset-0 bg-black/5 z-90" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/5 z-90 cursor-pointer"
+        onClick={onClose}
+      />
 
       {/* MODAL */}
       <div
         ref={modalRef}
-        className={`relative z-100 isolate overflow-hidden rounded-2xl bg-transparent transition-all duration-300
+        className={`relative z-100 isolate overflow-hidden rounded-2xl bg-transparent transition-all duration-300 cursor-grab
         ${
           isFullscreen
             ? "w-screen h-screen rounded-none"
@@ -78,7 +81,7 @@ export const HDRIModal = ({
         {!loaded && (
           <Image
             src={`/3d/hotels/${dir}/preview.png`}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover cursor-grab"
             fill
             alt={`${dir}_preview`}
           />

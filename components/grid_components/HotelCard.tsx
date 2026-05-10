@@ -18,15 +18,7 @@ export const HotelCard = ({
   return (
     <button
       onClick={() => onOpen(hotel)}
-      className="
-        group
-        relative
-        w-full
-        overflow-hidden
-        rounded-2xl
-        bg-neutral-200
-        text-left
-      "
+      className="group relative w-full overflow-hidden rounded-2xl bg-neutral-200 text-left cursor-pointer"
     >
       {/* Image */}
       <div className="relative aspect-4/3 w-full">
