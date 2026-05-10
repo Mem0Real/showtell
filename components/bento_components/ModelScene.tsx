@@ -6,7 +6,7 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls, ContactShadows, Environment, Sky } from '@react-three/drei';
 
 import { ModelLoader } from '@/components/bento_components/ModelLoader';
-import { BentoItem } from '@/components/bento_components/BentoGrid';
+import { BentoItem } from '@/lib/types';
 
 function SceneDebugger({ target, angle }: { target: [number, number, number] | undefined; angle: number | undefined }) {
   const controlsRef = useRef<any>(null);

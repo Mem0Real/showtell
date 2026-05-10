@@ -1,4 +1,4 @@
-import { BentoItem } from '@/components/bento_components/BentoGrid';
+import { BentoItem } from '@/lib/types';
 import { useGLTF } from '@react-three/drei';
 import { useLayoutEffect, useRef } from 'react';
 import * as THREE from 'three';

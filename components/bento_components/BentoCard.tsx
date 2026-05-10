@@ -1,32 +1,13 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
+import { BentoItem } from '@/lib/types';
 
-interface BentoItem {
-  id: string;
-  title: string;
-  location: string;
-  description: string;
-  image: string;
-  size: 'small' | 'medium' | 'large' | 'tall' | 'wide';
-  modelPath?: string; // Path to 3D model
-  stats?: {
-    rooms: number;
-    area: string;
-    rating: number;
-  };
-}
-interface BentoCardProps {
-  item: BentoItem;
-  onOpenModel: (item: BentoItem) => void;
-}
-
-export const BentoCard: React.FC<BentoCardProps> = ({ item, onOpenModel }) => {
+export const BentoCard = ({ item }: { item: BentoItem }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Size configurations
   const sizeClasses = {
     small: 'col-span-1 row-span-1',
     medium: 'col-span-1 row-span-1 md:col-span-2 md:row-span-1',
@@ -35,43 +16,82 @@ export const BentoCard: React.FC<BentoCardProps> = ({ item, onOpenModel }) => {
     wide: 'col-span-2 row-span-1',
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    
+    setMousePosition({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setMousePosition({ x: 0, y: 0 });
+  };
+
   return (
     <motion.div
       ref={cardRef}
       className={`relative ${sizeClasses[item.size]} rounded-2xl overflow-hidden group`}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
       whileHover={{ scale: 0.98 }}
       layoutId={`card-${item.id}`}
+      style={{
+        perspective: '1000px',
+        transformStyle: 'preserve-3d',
+      }}
     >
-      {/* Image */}
-      <div className='absolute inset-0'>
+      {/* Image with parallax */}
+      <motion.div 
+        className='absolute inset-0'
+        animate={{
+          x: isHovered ? mousePosition.x * -20 : 0,
+          y: isHovered ? mousePosition.y * -20 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         <Image
           src={item.image}
           alt={item.title}
           fill
-          className='object-cover transition-transform duration-700 group-hover:scale-110'
+          className='object-cover transition-transform duration-700'
           sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
           priority={item.size === 'large'}
         />
-      </div>
+      </motion.div>
 
       {/* Gradient Overlay */}
       <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent' />
 
-      {/* Hover Overlay */}
-      <motion.div
-        className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300'
+      {/* Hover Overlay with glare effect */}
+      {/* <motion.div
+        className='absolute inset-0 opacity-0 group-hover:opacity-70 transition-opacity '
         initial={false}
-        animate={{ opacity: isHovered ? 1 : 0 }}
-      />
+        animate={{
+          opacity: isHovered ? 1 : 0,
+          background: isHovered
+            ? `radial-gradient(circle at ${(mousePosition.x + 0.5) * 100}% ${(mousePosition.y + 0.5) * 100}%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.4) 100%)`
+            : 'rgba(0,0,0,0.4)',
+        }}
+      /> */}
 
-      {/* Content */}
-      <div className='absolute inset-0 p-2 xl:p-6 xl:py-2 flex flex-col justify-between'>
+      {/* Content with depth */}
+      <motion.div 
+        className='absolute inset-0 p-2 xl:p-6 xl:py-2 flex flex-col justify-between cursor-pointer'
+        animate={{
+          x: isHovered ? mousePosition.x * 10 : 0,
+          y: isHovered ? mousePosition.y * 10 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         {/* Top content */}
         <div className='hidden xl:block'>
           <motion.div
@@ -98,104 +118,50 @@ export const BentoCard: React.FC<BentoCardProps> = ({ item, onOpenModel }) => {
             layout='position'
             className='relative flex flex-col justify-center items-start h-full xl:h-auto'
           >
-            <motion.div
-              className='flex items-end justify-between'
-              animate={{
-                y: isHovered ? 0 : 0,
-              }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className='flex items-end justify-between'>
               <div>
-                <h3
-                  className={`text-white text-lg font-bold mb-1 ${item.size !== 'small' ? 'md:text-2xl' : 'lg:text-2xl'}`}
-                >
+                <h3 className={`text-white text-lg font-bold mb-1 ${item.size !== 'small' ? 'md:text-2xl' : 'lg:text-2xl'}`}>
                   {item.title}
                 </h3>
                 <p className='text-white/80 text-sm mb-2'>{item.location}</p>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Description and button - appears on hover */}
             <AnimatePresence mode='popLayout'>
               {isHovered && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{
-                    opacity: isHovered ? 1 : 0,
-                    y: isHovered ? 0 : 20,
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
                   }}
                   exit={{
                     y: 20,
                     opacity: 0,
+                    scale: 0.95,
                   }}
                   transition={{ duration: 0.3, delay: 0.1 }}
                 >
-                  <p
-                    className={`text-white/90 text-sm mt-3 mb-4 line-clamp-2 hidden ${item.size !== 'small' ? 'md:block' : 'lg:block'}`}
-                  >
+                  <p className={`text-white/90 text-sm mt-3 mb-4 line-clamp-2 hidden ${item.size !== 'small' ? 'md:block' : 'lg:block'}`}>
                     {item.description}
                   </p>
-
-                  {/* 3D Button */}
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenModel(item);
-                    }}
-                    className={`md:px-2 lg:px-4 py-1 rounded-sm lg:rounded-full text-white font-light lg:font-medium text-sm xl:text-base transition-all duration-300 ${
-                      item.modelPath
-                        ? 'bg-white/30 backdrop-blur-sm hover:bg-white/40 border border-white/20 cursor-pointer'
-                        : 'bg-gray-500/50 cursor-not-allowed'
-                    }`}
-                    disabled={!item.modelPath}
-                  >
-                    {item.modelPath ? (
-                      <span className='flex items-center gap-1 md:gap-2'>
-                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                          />
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-                          />
-                        </svg>
-                        View 3D Model
-                      </span>
-                    ) : (
-                      '3D Model Coming Soon'
-                    )}
-                  </motion.button>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         </LayoutGroup>
-      </div>
+      </motion.div>
 
-      <div className='absolute hidden md:flex gap-1 top-2 right-2'>
-        {/* 3D Badge */}
-        {item.modelPath && (
-          <div className='bg-white/20 backdrop-blur-sm rounded-full p-2'>
-            <svg className='w-5 h-5 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
-              />
-            </svg>
-          </div>
-        )}
-
-        {/* Rating */}
+      {/* Rating with depth */}
+      <motion.div 
+        className='absolute hidden md:flex gap-1 top-2 right-2'
+        animate={{
+          x: isHovered ? mousePosition.x * 15 : 0,
+          y: isHovered ? mousePosition.y * 15 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
         {item.stats && (
           <div className='flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1 w-fit'>
             <svg className='w-4 h-4 text-yellow-400' fill='currentColor' viewBox='0 0 20 20'>
@@ -204,7 +170,7 @@ export const BentoCard: React.FC<BentoCardProps> = ({ item, onOpenModel }) => {
             <span className='text-white text-xs font-medium'>{item.stats.rating}</span>
           </div>
         )}
-      </div>
+      </motion.div>
     </motion.div>
   );
 };

@@ -3,13 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { stopLenis, startLenis } from '@/lib/lenis';
-
-interface ModelViewerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children?: React.ReactNode;
-}
+import { ModelViewerProps } from '@/lib/types';
 
 export const ModelViewer = ({ isOpen, onClose, title = '3D Preview', children }: ModelViewerProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
