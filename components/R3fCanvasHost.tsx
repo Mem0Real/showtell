@@ -11,12 +11,12 @@ export const R3fCanvasHost = () => {
         antialias: false,
         powerPreference: "high-performance",
       }}
-      dpr={1}
+      dpr={[1, 1.5]}
       style={{
         position: "fixed",
         inset: 0,
         pointerEvents: "none",
-        zIndex: 20,
+        zIndex: 50,
       }}
     >
       <r3fTunnel.Out />
