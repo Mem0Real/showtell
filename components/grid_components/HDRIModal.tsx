@@ -14,8 +14,9 @@ export const HDRIModal = ({
 }) => {
   const [loaded, setLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
-  const dragging = useRef(false);
+  // const dragging = useRef(false);
   const rotation = useRef({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -24,7 +25,7 @@ export const HDRIModal = ({
   // pointer drag
   useEffect(() => {
     const move = (e: PointerEvent) => {
-      if (!dragging.current) return;
+      if (!dragging) return;
 
       rotation.current.x += e.movementX * 0.005;
       rotation.current.y += e.movementY * 0.005;
@@ -36,7 +37,7 @@ export const HDRIModal = ({
     };
 
     const up = () => {
-      dragging.current = false;
+      setDragging(false);
       if (document.pointerLockElement) document.exitPointerLock();
     };
 
@@ -47,12 +48,18 @@ export const HDRIModal = ({
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
     };
-  }, []);
+  }, [dragging]);
 
   // ESC close
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+
+        if (document.pointerLockElement) {
+          document.exitPointerLock();
+        }
+      }
     };
 
     window.addEventListener("keydown", handleKey);
@@ -128,7 +135,10 @@ export const HDRIModal = ({
         <div
           className="absolute inset-0 z-100"
           onPointerDown={(e) => {
-            dragging.current = true;
+            e.stopPropagation();
+
+            setDragging(true);
+
             (e.currentTarget as HTMLElement).requestPointerLock();
           }}
         />
