@@ -17,7 +17,7 @@ export const HotelGrid = () => {
       <div className="max-w-[92vw] xl:max-w-[85vw] mx-auto">
         {/* Header */}
         <div className="mb-12 md:mb-16">
-          <p className="text-sm uppercase tracking-[0.25em] text-neutral-500 mb-4">
+          <p className="text-sm uppercase tracking-[0.25em] text-neutral-700 mb-4">
             Premium Collection
           </p>
 

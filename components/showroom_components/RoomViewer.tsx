@@ -78,6 +78,7 @@ export const RoomViewer = ({ rooms }: any) => {
       {/* Dropdown */}
       <div className="absolute top-4 right-4 z-20">
         <select
+          aria-label="Room"
           value={active.src}
           onChange={(e) => {
             setActive(rooms.find((r: any) => r.src === e.target.value));

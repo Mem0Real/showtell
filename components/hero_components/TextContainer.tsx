@@ -95,7 +95,10 @@ export const TextContainer = ({ phase }: any) => {
             >
               Experience your vacation from home
             </motion.p>
-            <motion.button className="transition-all duration-500">
+            <motion.button
+              className="transition-all duration-500"
+              aria-label="Scroll"
+            >
               <MouseScrollIcon />
             </motion.button>
           </div>

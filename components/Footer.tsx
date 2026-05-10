@@ -136,7 +136,7 @@ export const Footer = () => {
         <div className="max-w-[85vw] mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             {/* Copyright */}
-            <div className="text-gray-500 text-sm">
+            <div className="text-neutral-200 text-sm">
               &copy; {currentYear} SHOWTELL. All rights reserved.
             </div>
           </div>
