@@ -78,11 +78,12 @@ export const HDRIModal = ({
 
   return (
     <AnimatePresence>
-      <motion.div
-        className={`fixed z-100 inset-0 flex items-center justify-center ${!loaded && "bg-black/40"}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <div
+        className={`
+          fixed z-100 inset-0 flex items-center justify-center transition-opacity duration-150 ease-in
+          ${!loaded && "bg-black/40"}
+          ${hotel ? "opacity-100" : "opacity-0"}
+          `}
       >
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/10 -z-50" onClick={onClose} />
@@ -163,7 +164,7 @@ export const HDRIModal = ({
             }}
           />
         </motion.div>
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

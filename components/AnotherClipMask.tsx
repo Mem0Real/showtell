@@ -1,123 +1,50 @@
-'use client';
+"use client";
 
-import { playfair } from '@/lib/fonts';
-import { motion } from 'framer-motion';
+import { motion } from "motion/react";
+import { playfair } from "@/lib/fonts";
 
 export const AnotherClipMask = () => {
-  const motto = 'Your Safe Haven Awaits';
-
   return (
-    <section className='relative w-full py-24 md:py-32 bg-linear-to-b from-gray-50 via-light to-gray-50 overflow-hidden'>
-      <div className='max-w-full lg:max-w-4xl mx-auto px-2 lg:px-4'>
-        {/* Hand-drawn border box */}
-        <div className='relative'>
-          {/* SVG Border */}
-          <motion.svg
-            className='absolute -inset-8 md:-inset-12'
-            viewBox='0 0 500 200'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-            preserveAspectRatio='none'
-          >
-            {/* Top-left corner */}
-            <motion.path
-              d='M20 10 C 10 10, 5 20, 5 35 L 5 160 C 5 175, 15 190, 30 190'
-              stroke='currentColor'
-              strokeWidth='2.5'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-300'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: 'easeInOut' }}
-            />
+    <section className="relative py-28 md:py-36 bg-gray-50 overflow-hidden">
+      {/* Background accents */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-gray-300 to-transparent" />
 
-            {/* Bottom-right corner */}
-            <motion.path
-              d='M480 190 C 490 190, 495 180, 495 165 L 495 40 C 495 25, 485 10, 470 10'
-              stroke='currentColor'
-              strokeWidth='2.5'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-300'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.3 }}
-            />
+        <div className="absolute inset-y-0 left-8 w-px bg-linear-to-b from-transparent via-gray-200 to-transparent hidden lg:block" />
 
-            {/* Scribble accents on corners */}
-            <motion.path
-              d='M25 25 Q 30 15, 40 25 Q 50 35, 55 25'
-              stroke='currentColor'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-400'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.6 }}
-            />
-
-            <motion.path
-              d='M450 175 Q 455 185, 465 175 Q 475 165, 480 175'
-              stroke='currentColor'
-              strokeWidth='1.5'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-400'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.9 }}
-            />
-
-            {/* Side scribbles */}
-            <motion.path
-              d='M5 80 Q 15 75, 5 70 Q 15 65, 5 60'
-              stroke='currentColor'
-              strokeWidth='1'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-300/60'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, delay: 1.2 }}
-            />
-
-            <motion.path
-              d='M495 80 Q 485 75, 495 70 Q 485 65, 495 60'
-              stroke='currentColor'
-              strokeWidth='1'
-              strokeLinecap='round'
-              fill='none'
-              className='text-gray-300/60'
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, delay: 1.2 }}
-            />
-          </motion.svg>
-
-          {/* Content inside the border */}
-          <motion.div
-            className='relative py-16 md:py-20 text-center'
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <h2 className={`text-5xl md:text-7xl font-bold text-gray-900 mb-4 ${playfair.className}`}>{motto}</h2>
-            <div className='w-24 h-1 bg-linear-to-r from-transparent via-gray-400 to-transparent mx-auto mt-6' />
-            <p className='mt-6 text-gray-600 text-lg max-w-md mx-auto'>
-              Discover extraordinary rooms designed to inspire and delight you
-            </p>
-          </motion.div>
-        </div>
+        <div className="absolute inset-y-0 right-8 w-px bg-linear-to-b from-transparent via-gray-200 to-transparent hidden lg:block" />
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 max-w-4xl mx-auto px-6 text-center"
+      >
+        <p className="uppercase tracking-[0.35em] text-xs md:text-sm text-gray-500 mb-6">
+          Your Next Escape
+        </p>
+
+        <h2
+          className={`text-4xl md:text-6xl lg:text-7xl text-gray-900 leading-tight ${playfair.className}`}
+        >
+          Your Safe Haven
+          <br />
+          Awaits
+        </h2>
+
+        <p className="mt-8 text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+          Exceptional hospitality, refined interiors, and destinations designed
+          for rest and inspiration.
+        </p>
+
+        <div className="mt-12 flex items-center justify-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-gray-300" />
+          <span className="w-16 h-px bg-gray-300" />
+          <span className="w-2 h-2 rounded-full bg-gray-300" />
+        </div>
+      </motion.div>
     </section>
   );
 };
