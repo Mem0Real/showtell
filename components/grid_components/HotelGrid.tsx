@@ -1,59 +1,48 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { HotelCard } from "@/components/grid_components/HotelCard";
 import { playfair } from "@/lib/fonts";
 import { useState } from "react";
 import { HDRIModal } from "@/components/grid_components/HDRIModal";
 import { hotels } from "@/lib/data";
 
-// Grid Component
 export const HotelGrid = () => {
   const [activeHotel, setActiveHotel] = useState<any>(null);
 
   return (
     <section
       id="properties"
-      className="w-full min-h-screen bg-light py-20 px-4 md:px-8"
+      className="w-full bg-light py-16 md:py-20 px-4 md:px-8"
     >
-      <div className="max-w-[80vw] md:max-w-[85vw] mx-auto">
-        <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
+      <div className="max-w-[92vw] xl:max-w-[85vw] mx-auto">
+        {/* Header */}
+        <div className="mb-12 md:mb-16">
+          <p className="text-sm uppercase tracking-[0.25em] text-neutral-500 mb-4">
+            Premium Collection
+          </p>
+
           <h2
-            className={`text-5xl md:text-6xl font-bold text-neutral-800 mb-4 ${playfair.className}`}
+            className={`text-4xl md:text-6xl font-bold text-neutral-900 mb-4 ${playfair.className}`}
           >
             Properties Showcase
           </h2>
-          <p className="text-neutral-800/60 text-lg">
-            Drag on the images to explore every detail
+
+          <p className="text-neutral-600 text-base md:text-lg">
+            Explore immersive hotel experiences
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {hotels.map((hotel, index) => (
-            <motion.div
-              key={hotel.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.15 }}
-            >
-              <HotelCard hotel={hotel} onOpen={setActiveHotel} />
-            </motion.div>
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {hotels.map((hotel) => (
+            <HotelCard key={hotel.name} hotel={hotel} onOpen={setActiveHotel} />
           ))}
-
-          {activeHotel && (
-            <HDRIModal
-              hotel={activeHotel}
-              onClose={() => setActiveHotel(null)}
-            />
-          )}
         </div>
       </div>
+
+      {activeHotel && (
+        <HDRIModal hotel={activeHotel} onClose={() => setActiveHotel(null)} />
+      )}
     </section>
   );
 };

@@ -7,8 +7,11 @@ export const R3fCanvasHost = () => {
   return (
     <Canvas
       camera={{ position: [0, 0, 0.1] }}
-      gl={{ antialias: true }}
-      dpr={[1, 1.5]}
+      gl={{
+        antialias: false,
+        powerPreference: "high-performance",
+      }}
+      dpr={1}
       style={{
         position: "fixed",
         inset: 0,

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface Hotel {
   name: string;
 }
@@ -14,21 +16,44 @@ export const HotelCard = ({
   const dir = hotel.name.replaceAll(" ", "_").toLowerCase();
 
   return (
-    <div
-      className="relative w-full h-125 rounded-2xl overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]"
+    <button
       onClick={() => onOpen(hotel)}
+      className="
+        group
+        relative
+        w-full
+        overflow-hidden
+        rounded-2xl
+        bg-neutral-200
+        text-left
+      "
     >
-      <img
-        src={`/3d/hotels/${dir}/card.png`}
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-
-      <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
-
-      <div className="absolute bottom-0 p-6 text-white">
-        <h3 className="text-2xl font-bold">{hotel.name}</h3>
-        <p className="text-sm opacity-70">Click to explore</p>
+      {/* Image */}
+      <div className="relative aspect-4/3 w-full">
+        <Image
+          src={`/3d/hotels/${dir}/card.png`}
+          alt={hotel.name}
+          fill
+          priority={false}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="
+            object-cover
+            transition-opacity
+            duration-300
+            group-hover:opacity-95
+          "
+        />
       </div>
-    </div>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+
+      {/* Text */}
+      <div className="absolute bottom-0 p-5 text-white">
+        <h3 className="text-2xl font-semibold">{hotel.name}</h3>
+
+        <p className="text-sm text-white/70 mt-1">View experience</p>
+      </div>
+    </button>
   );
 };
