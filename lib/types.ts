@@ -18,6 +18,7 @@ export interface BentoItem {
 
   scale?: number;
   ground?: boolean;
+  category?: string;
 }
 
 export interface ModelViewerProps {

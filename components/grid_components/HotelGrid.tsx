@@ -1,40 +1,39 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { HotelCard } from '@/components/grid_components/HotelCard';
-import { playfair } from '@/lib/fonts';
-import { useState } from 'react';
-import { HDRIModal } from '@/components/grid_components/HDRIModal';
+import { motion } from "framer-motion";
+import { HotelCard } from "@/components/grid_components/HotelCard";
+import { playfair } from "@/lib/fonts";
+import { useState } from "react";
+import { HDRIModal } from "@/components/grid_components/HDRIModal";
+import { hotels } from "@/lib/data";
 
 // Grid Component
 export const HotelGrid = () => {
   const [activeHotel, setActiveHotel] = useState<any>(null);
 
-  const hotels = [
-    { name: 'Hilton Hotel' },
-    { name: 'Radison Blu Hotel' },
-    { name: 'Getfam Hotel' },
-    { name: 'Sarem International Hotel' },
-    { name: 'The Grand Palace Suites Hotel' },
-    { name: 'Ethiopian Skylight Hotel' },
-  ];
-
   return (
-    <section className='w-full min-h-screen bg-light py-20 px-4 md:px-8'>
-      <div className='max-w-[80vw] md:max-w-[85vw] mx-auto'>
+    <section
+      id="properties"
+      className="w-full min-h-screen bg-light py-20 px-4 md:px-8"
+    >
+      <div className="max-w-[80vw] md:max-w-[85vw] mx-auto">
         <motion.div
-          className='mb-16'
+          className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className={`text-5xl md:text-6xl font-bold text-neutral-800 mb-4 ${playfair.className}`}>
+          <h2
+            className={`text-5xl md:text-6xl font-bold text-neutral-800 mb-4 ${playfair.className}`}
+          >
             Properties Showcase
           </h2>
-          <p className='text-neutral-800/60 text-lg'>Drag on the images to explore every detail</p>
+          <p className="text-neutral-800/60 text-lg">
+            Drag on the images to explore every detail
+          </p>
         </motion.div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {hotels.map((hotel, index) => (
             <motion.div
               key={hotel.name}
@@ -47,7 +46,12 @@ export const HotelGrid = () => {
             </motion.div>
           ))}
 
-          {activeHotel && <HDRIModal hotel={activeHotel} onClose={() => setActiveHotel(null)} />}
+          {activeHotel && (
+            <HDRIModal
+              hotel={activeHotel}
+              onClose={() => setActiveHotel(null)}
+            />
+          )}
         </div>
       </div>
     </section>
